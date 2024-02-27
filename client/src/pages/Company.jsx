@@ -1,9 +1,12 @@
 import React from 'react'
 
-export default function Company() {
+function Company() {
   return (
     <div>
-      <h1>campany</h1>
+      <h1>Company</h1>
     </div>
   )
 }
+
+export default Company
+

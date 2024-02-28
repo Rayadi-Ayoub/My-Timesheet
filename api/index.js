@@ -30,3 +30,13 @@ app.listen(3000, () => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/register", registerRoutes);
+
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode || 500;
+const message = res.message || "Internal Server Error";
+res.status(statusCode).json({
+  success: false,
+  statusCode,
+  message,
+   });
+});

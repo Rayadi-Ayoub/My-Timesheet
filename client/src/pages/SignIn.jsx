@@ -1,27 +1,31 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, seterrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if ( !formData.email || !formData.password) {
-      return seterrorMessage("please fill out  all fields.");
+    if (!formData.email || !formData.password) {
+      return dispatch(signInFailure("Please fill all the fields"));
     }
 
     try {
-      setLoading(true);
-      seterrorMessage(null);
-      const res = await fetch("/api/register/SignIn", {
+      dispatch(signInStart());
+      const res = await fetch("/api/register/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,15 +34,15 @@ export default function SignIn() {
       });
       const data = await res.json();
       if (data.success === false) {
-        seterrorMessage(data.message);
+        return dispatch(signInFailure(data.message));
       }
-      setLoading(false);
-      if(res.ok){
-        navigate('/')
+
+      if (res.ok) {
+        dispatch(signInSuccess(data));
+        navigate("/");
       }
     } catch (error) {
-      seterrorMessage(error.message);
-      setLoading(false);
+      dispatch(signInFailure(error.message));
     }
   };
 
@@ -54,19 +58,14 @@ export default function SignIn() {
             System
           </Link>
           <p className="text-sm mt-5">
-            GEISER (La Générale D'Informatique et de Services) appartient au
-            Pôle Services & Finances du Groupe UTIC (Ulysse Trading and
-            Industrial Companies). Forte de son savoir-faire, de l'expertise de
-            ses équipes et de la performance de ses solutions innovantes, GEISER
-            s'est spécialisée dans l'intégration de solutions informatiques pour
-            la réalisation « clé en main » de vos projets
+            You can sign in with your email and password or contact your
+            manager.
           </p>
         </div>
         {/* right */}
 
         <div className="flex-1">
           <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
-           
             <div>
               <Label value="Email " />
               <TextInput

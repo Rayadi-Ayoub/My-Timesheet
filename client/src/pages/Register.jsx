@@ -27,6 +27,7 @@ export default function Register() {
         },
         body: JSON.stringify(formData),
       });
+
       const data = await res.json();
       if (data.success === false) {
         seterrorMessage(data.message);
@@ -49,14 +50,7 @@ export default function Register() {
             </span>
             System
           </Link>
-          <p className="text-sm mt-5">
-            GEISER (La Générale D'Informatique et de Services) appartient au
-            Pôle Services & Finances du Groupe UTIC (Ulysse Trading and
-            Industrial Companies). Forte de son savoir-faire, de l'expertise de
-            ses équipes et de la performance de ses solutions innovantes, GEISER
-            s'est spécialisée dans l'intégration de solutions informatiques pour
-            la réalisation « clé en main » de vos projets
-          </p>
+          <p className="text-sm mt-5">complete</p>
         </div>
         {/* right */}
 

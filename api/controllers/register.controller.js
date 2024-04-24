@@ -4,24 +4,60 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const {
+    username,
+    matricule,
+    poste,
+    departement,
+    hiringDate,
+    address,
+    phone,
+    email,
+    password,
+  } = req.body;
 
+  const existingUser = await User.findOne({ matricule });
+  if (existingUser) {
+    return next(errorHandler(400, "this user exists in your liste"));
+  }
+  // if (!req.User || !req.User.isAdmin) {
+  //   return next(errorHandler(400, "You Are not allowed to register a user"));
+  // }
   if (
     !username ||
+    !matricule ||
+    !poste ||
+    !departement ||
+    !hiringDate ||
+    !address ||
+    !phone ||
     !email ||
     !password ||
     username === "" ||
+    matricule === "" ||
+    poste === "" ||
+    departement === "" ||
+    hiringDate === "" ||
+    address === "" ||
+    phone === "" ||
     email === "" ||
     password === ""
+    
   ) {
     console.log("error");
-    next(errorHandler(400, "All fields are required"));
+    next(errorHandler(400, "Please provide all required fields"));
   }
 
   const hashPassword = bcryptjs.hashSync(password, 10);
 
   const newUser = new User({
     username,
+    matricule,
+    poste,
+    departement,
+    hiringDate,
+    address,
+    phone,
     email,
     password: hashPassword,
   });
@@ -49,7 +85,10 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(400, "Invalid password"));
     }
 
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: validUser._id, isAdmin: validUser.isAdmin },
+      process.env.JWT_SECRET
+    );
     const { password: pass, ...rest } = validUser._doc;
 
     res

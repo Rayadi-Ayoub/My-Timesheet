@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   updateStart,
   updateSuccess,
@@ -14,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 export default function DashProfile() {
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [formData, setFormData] = useState({});
@@ -23,6 +24,7 @@ export default function DashProfile() {
   const [showModel, setShowModel] = useState(false);
   const filePickerRef = useRef();
   const dispatch = useDispatch();
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
 
@@ -33,12 +35,27 @@ export default function DashProfile() {
   };
   useEffect(() => {
     if (imageFile) {
-      uploadImage();
+      uploadImage(imageFile);
     }
   }, [imageFile]);
 
-  const uploadImage = async () => {
-    console.log("uploading image...");
+  const uploadImage = async (image) => {
+    console.log(imageFile);
+    const fd = new FormData();
+    fd.append("profile-file", image);
+    fd.append("userId", currentUser._id);
+    const res = await fetch("/api/user/profile-upload-single", {
+      method: "POST",
+      body: fd,
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    // If you expect a JSON response
+    const data = await res.json();
+    return data;
   };
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -54,7 +71,7 @@ export default function DashProfile() {
     }
     try {
       dispatch(updateStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`/api/user/update/${currentUser?._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -64,22 +81,21 @@ export default function DashProfile() {
 
       const data = await res.json();
       if (!res.ok) {
-        dispatch(updateFailure(data.message));
-        setUpdateUserError(data.message);
+        dispatch(updateFailure(data?.message));
+        setUpdateUserError(data?.message);
       } else {
         dispatch(updateSuccess(data));
         setUpdateUserSuccess(" User Profile updated successfully!");
       }
     } catch (error) {
-      dispatch(updateFailure("error.message"));
-      setUpdateUserError(error.message);
+      dispatch(updateFailure(error?.message));
+      setUpdateUserError(error?.message);
     }
   };
   const handleDeleteUser = async () => {
     setShowModel(false);
     try {
       dispatch(deleteUserStart());
-      dispatch(deleteUserFailure(error.message));
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
       });
@@ -152,9 +168,25 @@ export default function DashProfile() {
           placeholder="password"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          <span>Update</span>
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          outline
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Update"}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={"/register"}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Creat a new user
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModel(true)} className="cursor-pointer">

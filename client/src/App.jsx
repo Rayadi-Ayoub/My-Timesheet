@@ -4,12 +4,11 @@ import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import About from "./pages/About";
 import SignIn from "./pages/SignIn";
-import Pole from "./pages/Pole";
-import Campany from "./pages/Company";
-import Projects from "./pages/Projects";
 import Home from "./pages/Home";
 import Header from "./components/Header";
+import CreateUser from "./pages/CreateUser";
 import PrivateRoute from "./components/PrivateRoute";
+import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
 
 export default function App() {
   return (
@@ -20,11 +19,11 @@ export default function App() {
         <Route path="/About" element={<About />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route element={<PrivateRoute />}>
-          <Route path="register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/pole" element={<Pole />} />
-          <Route path="/campany" element={<Campany />} />
-          <Route path="/projects" element={<Projects />} />
+        </Route>
+        <Route element={<OnlyAdminPrivateRoute />}>
+          <Route path="dashboard?tab=create-user" element={<CreateUser />} />
+          <Route path="/register" element={<Register />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,9 +1,11 @@
 import React from "react";
 
-export default function Home() {
+function Tasks() {
   return (
     <div>
-      <h1>home</h1>
+      <h1>tasks</h1>
     </div>
   );
 }
+
+export default Tasks;

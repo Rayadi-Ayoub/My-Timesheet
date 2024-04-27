@@ -1,6 +1,6 @@
 
-import TypeTache from '../models/typeTache.model.js';
 import Tache from '../models/tache.model.js';
+import TypeTache from '../models/typetache.model.js';
 
 
 
@@ -24,7 +24,8 @@ export const getAllTypeTaches = async (req, res) => {
   };
   
   export const addTacheWithTypeTache = async (req, res) => {
-      const { typeTacheId, nomTache, prixforfitaire } = req.body;
+      const {  nomTache, prixforfitaire } = req.body;
+      const {typeTacheId} = req.params;
   
       try {
           const newTache = new Tache({ NomTache: nomTache, prixforfitaire });

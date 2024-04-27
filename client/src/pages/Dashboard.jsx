@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Dashsidebar from "../components/Dashsidebar";
 import DashProfile from "../components/DashProfile";
-import CreateUser from "./CreateUser";
 import DashUsers from "../components/DashUsers";
-import DashPole from "../components/DashPole";
-import DashCompany from "../components/DashCompany";
+import Pole from "../pages/Pole";
+import Company from "../pages/Company";
+import Project from "../pages/Project";
+import Pointing from "../pages/Pointing";
+import Tasks from "../pages/Tasks";
+
 export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState();
@@ -26,15 +29,23 @@ export default function Dashboard() {
       {/* profile... */}
       {tab === "profile" && <DashProfile />}
 
-      {tab === "create-user" && <CreateUser />}
       {/* users... */}
       {tab === "users" && <DashUsers />}
 
       {/* pole... */}
-      {tab === "pole" && <DashPole />}
+      {tab === "pole" && <Pole />}
 
       {/* company... */}
-      {tab === "company" && <DashCompany />}
+      {tab === "company" && <Company />}
+
+      {/* <project /> */}
+      {tab === "project" && <Project />}
+
+      {/* <Tasks /> */}
+      {tab === "Tasks" && <Tasks />}
+
+      {/* <pointing /> */}
+      {tab === "pointing" && <Pointing />}
     </div>
   );
 }

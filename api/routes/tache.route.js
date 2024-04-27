@@ -9,8 +9,9 @@ import {
 const router = Express.Router();
 
 router.post("/addtypetache", addTypeTache);
-router.post('/tacheWithTypeTache', addTacheWithTypeTache);
+router.post('/tacheWithTypeTache/:typeTacheId', addTacheWithTypeTache);
 router.get("/getAllTypeTaches", getAllTypeTaches);
 router.get("/getTachesByTypeTache", getTachesByTypeTache);
+
 
 export default router;

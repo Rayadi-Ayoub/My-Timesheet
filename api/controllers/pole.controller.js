@@ -112,3 +112,11 @@ export const getAllSocietes = async (req, res) => {
 };
 
 
+export const getAllPoles = async (req, res) => {
+  try {
+    const poles = await Pole.find();
+    res.json(poles);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

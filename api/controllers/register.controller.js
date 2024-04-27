@@ -4,6 +4,8 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
+
+
   const {
     username,
     matricule,
@@ -20,9 +22,7 @@ export const register = async (req, res, next) => {
   if (existingUser) {
     return next(errorHandler(400, "this user exists in your liste"));
   }
-  // if (!req.User || !req.User.isAdmin) {
-  //   return next(errorHandler(400, "You Are not allowed to register a user"));
-  // }
+
   if (
     !username ||
     !matricule ||
@@ -48,7 +48,13 @@ export const register = async (req, res, next) => {
     next(errorHandler(400, "Please provide all required fields"));
   }
 
+
   const hashPassword = bcryptjs.hashSync(password, 10);
+
+  
+  // if ( !req.user.isAdmin) {
+  //   return next(errorHandler(400, "You Are not allowed to register a user"));
+  // }
 
   const newUser = new User({
     username,

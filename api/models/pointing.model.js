@@ -31,6 +31,10 @@ const PointingSchema = new mongoose.Schema(
       ref: "User",
     },
 
+    Users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+
+    TypeTaches: [{ type: mongoose.Schema.Types.ObjectId, ref: "TypeTache" }],
+    
     taches: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tache" }],
 
     societes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Societe" }],

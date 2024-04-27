@@ -1,17 +1,38 @@
 import Pointing from "../models/pointing.model.js";
 
-
-
 export const addPointing = async (req, res) => {
-  const pointing = req.body;
-  const newPointing = new Pointing(pointing);
+  const pointing = new Pointing({
+    date: req.body.date,
+    location: req.body.location,
+    noms: req.body.noms,
+    heuresdetravaillees: req.body.heuresdetravaillees,
+    typetache: req.body.typetache,
+    nomtache: req.body.nomtache,
+    idUser: req.body.idUser,
+    Users: req.body.Users,
+    TypeTaches: req.body.TypeTaches,
+    taches: req.body.taches,
+    societes: req.body.societes,
+  });
+
   try {
-    await newPointing.save();
+    const newPointing = await pointing.save();
     res.status(201).json(newPointing);
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
-}
+};
+
+// export const addPointing = async (req, res) => {
+//   const pointing = req.body;
+//   const newPointing = new Pointing(pointing);
+//   try {
+//     await newPointing.save();
+//     res.status(201).json(newPointing);
+//   } catch (error) {
+//     res.status(409).json({ message: error.message });
+//   }
+// }
 
 export const deletePointing = async (req, res) => {
   const { pointingId } = req.params;

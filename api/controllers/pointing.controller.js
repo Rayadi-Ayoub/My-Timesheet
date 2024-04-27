@@ -62,11 +62,3 @@ export const getPointing = async (req, res) => {
 }
 
 
-export const getPointingByUserId = async (req, res) => {
-  try {
-    const pointings = await Pointing.find({ idUser: req.params.userId }).populate('Users').populate('TypeTaches').populate('taches').populate('societes');
-    res.json(pointings);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};

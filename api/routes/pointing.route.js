@@ -3,7 +3,6 @@ import {
   addPointing,
   deletePointing,
     getPointingsByUser,
-    
 } from "../controllers/pointing.controller.js";
 
 

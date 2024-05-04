@@ -24,17 +24,17 @@ export const getAllTypeTaches = async (req, res) => {
   };
   
   export const addTacheWithTypeTache = async (req, res) => {
-      const {  nomTache, prixforfitaire } = req.body;
-      const {typeTacheId} = req.params;
+    const { nomtache, prixforfitaire } = req.body;
+    const { typeTacheId } = req.params;
   
-      try {
-          const newTache = new Tache({ NomTache: nomTache, prixforfitaire });
-          await newTache.save();
+    try {
+      const newTache = new Tache({ nomtache, prixforfitaire });
+      await newTache.save();
   
-          const typeTache = await TypeTache.findById(typeTacheId);
-          if (!typeTache) {
-              return res.status(404).json({ message: 'TypeTache not found' });
-          }
+      const typeTache = await TypeTache.findById(typeTacheId);
+      if (!typeTache) {
+        return res.status(404).json({ message: 'TypeTache not found' });
+      }
   
           typeTache.taches.push(newTache);
           await typeTache.save();
@@ -45,11 +45,18 @@ export const getAllTypeTaches = async (req, res) => {
       }
   };
 
-export const getTachesByTypeTache = async (req, res) => {
+
+  export const getTachesByTypeTache = async (req, res) => {
+    const { typeTacheId } = req.params;
+  
     try {
-        const typeTache = await TypeTache.findById(req.params.id).populate('taches');
-        res.json(typeTache.taches);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+      const typeTache = await TypeTache.findById(typeTacheId).populate('taches');
+      if (!typeTache) {
+        return res.status(404).json({ message: 'TypeTache not found' });
+      }
+  
+      res.status(200).json(typeTache.taches);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-};
+  };

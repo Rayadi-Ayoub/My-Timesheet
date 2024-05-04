@@ -40,7 +40,6 @@ export default function DashProfile() {
   }, [imageFile]);
 
   const uploadImage = async (image) => {
-    console.log(imageFile);
     const fd = new FormData();
     fd.append("profile-file", image);
     fd.append("userId", currentUser._id);
@@ -165,7 +164,7 @@ export default function DashProfile() {
         <TextInput
           type="password"
           id="password"
-          placeholder="password"
+          placeholder="Password"
           onChange={handleChange}
         />
         <Button

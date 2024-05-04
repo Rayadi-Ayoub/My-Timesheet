@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import Loading from "../pages/loader";
+
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
@@ -63,7 +65,7 @@ export default function DashUsers() {
   };
 
   return (
-    <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
+    <div className="table-auto overflow-x-scroll md:mx-auto p-10 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
       {currentUser.isAdmin && users.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
@@ -74,8 +76,6 @@ export default function DashUsers() {
               <Table.HeadCell>Email</Table.HeadCell>
               <Table.HeadCell>Admin</Table.HeadCell>
               <Table.HeadCell>Delete</Table.HeadCell>
-              <Table.HeadCell>update</Table.HeadCell>
-              <Table.HeadCell>DETAILS</Table.HeadCell>
             </Table.Head>
             {users.map((user) => (
               <Table.Body className="divide-y" key={user._id}>
@@ -110,29 +110,6 @@ export default function DashUsers() {
                       Delete
                     </span>
                   </Table.Cell>
-                  <Table.Cell>
-                    <span
-                      onClick={() => {
-                        setShowModal(true);
-                        setUserIdToDelete(user._id);
-                      }}
-                      className="font-medium text-amber-500 hover:underline cursor-pointer"
-                    >
-                      Update
-                    </span>
-                  </Table.Cell>
-
-                  <Table.Cell>
-                    <span
-                      onClick={() => {
-                        setShowModal(true);
-                        setUserIdToDelete(user._id);
-                      }}
-                      className="font-medium text-blue-600 hover:underline cursor-pointer"
-                    >
-                      Details
-                    </span>
-                  </Table.Cell>
                 </Table.Row>
               </Table.Body>
             ))}
@@ -147,7 +124,7 @@ export default function DashUsers() {
           )}
         </>
       ) : (
-        <p>You have no users yet!</p>
+        <Loading />
       )}
       <Modal
         show={showModal}

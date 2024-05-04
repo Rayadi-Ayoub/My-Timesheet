@@ -8,6 +8,9 @@ import Home from "./pages/Home";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
+// import DashUsers from "./components/DashUsers";
+// import DashProfile from "./components/DashProfile";
+// import Project from "./components/Project";
 
 export default function App() {
   return (
@@ -19,6 +22,10 @@ export default function App() {
         <Route path="/sign-in" element={<SignIn />} />
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          {/* <Route path="/dashboard?tab=project" element={<Project />} />
+          <Route path="/dashboard?tab=users" element={<DashUsers />} />
+          <Route path="/dashboard?tab=profile" element={<DashProfile />} />
+          <Route path="/dashboard?tab=profile" element={<DashProfile />} /> */}
         </Route>
         <Route element={<OnlyAdminPrivateRoute />}>
           <Route path="/register" element={<Register />} />

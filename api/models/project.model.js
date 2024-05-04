@@ -32,7 +32,8 @@ const ProjectSchema = new mongoose.Schema(
             ref: "Pole",
         },
         taches: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tache" }],
-        employee:[{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+        employee:[{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+        creator:{ type: mongoose.Schema.Types.ObjectId, ref: "User" }
     },
     { timestamps: true }
 );

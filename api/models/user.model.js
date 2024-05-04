@@ -11,10 +11,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    poste: {
-      type: String,
-      required: true,
-    },
+      poste: {
+          type: String,
+          required : true,
+          default: 'basic',
+          enum: ["user","controller", "manager", "admin"]},
     departement: {
       type: String,
       required: true,

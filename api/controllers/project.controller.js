@@ -15,7 +15,7 @@ export const createProject = async (req,res) =>{
 
 export const getProjects = async (req,res) =>{
     try {
-        const Projets = await Projet.find({}).populate('employee').populate('taches').populate('pole').populate('societe_concernes');
+        const Projets = await Projet.find({}).populate('employee').populate('taches').populate('pole').populate('societe_concernes').populate('creator');
         res.status(200).json({
             data:Projets
         })
@@ -28,7 +28,7 @@ export const getProjects = async (req,res) =>{
 }
 export const getProjectById = async(req,res) =>{
     try {
-        const proj =await Projet.findById(req.params.id).populate('employee').populate('taches').populate('pole').populate('societe_concernes');
+        const proj =await Projet.findById(req.params.id).populate('employee').populate('taches').populate('pole').populate('societe_concernes').populate('creator');
         res.status(200).json({
             data: proj,
         })

@@ -1,6 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/user.model.js';
+import {roles} from'./role.js'
 
 export const test = (req, res) => {
   res.json({ message: 'API is working!' });
@@ -129,3 +130,22 @@ export const uploadProfileImage = async(req,res ) => {
     })
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);}
+
+
+export const grantAccess = (action, resource) => {
+
+    return async (req, res, next) => {
+        try {
+            const permission = roles.can(req.user.poste)[action](resource)
+            if (!permission.granted) {
+                return res.status(401).json({
+                    error: "You don't have enough permission to perform this action",
+                })
+            }
+            next()
+        } catch (error) {
+
+            res.send('Error' + error)
+        }
+    }
+}

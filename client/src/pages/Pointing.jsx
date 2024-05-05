@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "flowbite-react";
+import { Spinner, Button, Alert } from "flowbite-react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addPointingsStart,
+  addPointingsSuccess,
+  addPointingsFailure,
+} from "../redux/user/userSlice";
 
 function Pointing() {
+  const { currentUser, error } = useSelector((state) => state.user);
   const [poles, setPoles] = useState([]);
   const [selectedPole, setSelectedPole] = useState("");
   const [societes, setSocietes] = useState([]);
@@ -10,7 +17,11 @@ function Pointing() {
   const [selectedTypeTache, setSelectedTypeTache] = useState("");
   const [timeStart, setTimeStart] = useState("");
   const [timeEnd, setTimeEnd] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  const [addPointingsSuccessMessage, setAddPointingsSuccessMessage] =
+    useState(""); // Add this
+  const [addPointingsErrorMessage, setAddPointingsErrorMessage] = useState(""); // Add this
+  const dispatch = useDispatch();
   useEffect(() => {
     fetchPoles();
     fetchTypeTaches();
@@ -70,29 +81,47 @@ function Pointing() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!societes.length || !taches.length) {
+      console.log("Societes or Taches is empty");
+      return;
+    }
+
     const pointingData = {
       pole: selectedPole,
-      societe: societes[0]._id, // assuming the first societe is selected
+      societe: societes[0]._id,
       typeTache: selectedTypeTache,
-      tache: taches[0]._id, // assuming the first tache is selected
+      tache: taches[0]._id,
       timeStart,
       timeEnd,
+      createdBy: currentUser._id, // replace this with the actual user ID
     };
 
-    const response = await fetch("/api/pointings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pointingData),
-    });
+    dispatch(addPointingsStart());
 
-    if (response.ok) {
-      // handle successful submission
-      console.log("Pointing added successfully");
-    } else {
-      // handle error
-      console.log("Error adding pointing");
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/pointings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pointingData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(addPointingsSuccess(data));
+        setLoading(false);
+        setAddPointingsSuccessMessage("Pointing added successfully");
+      } else {
+        const errorData = await response.json();
+        dispatch(addPointingsFailure(errorData));
+        setAddPointingsErrorMessage("Failed to add pointing");
+      }
+    } catch (error) {
+      dispatch(addPointingsFailure(error.message));
+      setAddPointingsError(error.message);
+      setLoading(false);
     }
   };
 
@@ -115,7 +144,7 @@ function Pointing() {
             id="timeStart"
             name="timeStart"
             onChange={handleTimeStartChange}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-dark-200"
           />
           <label
             htmlFor="timeEnd"
@@ -128,7 +157,7 @@ function Pointing() {
             id="timeEnd"
             name="timeEnd"
             onChange={handleTimeEndChange}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-dark-200"
           />
         </div>
         <select
@@ -175,9 +204,36 @@ function Pointing() {
             ))}
           </select>
         )}
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          Add Pointing
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          disabled={loading}
+          outline
+        >
+          {loading ? (
+            <>
+              <Spinner size="sm" />
+              <span className="pl-3">Loading...</span>
+            </>
+          ) : (
+            " Add Pointing"
+          )}
         </Button>
+        {addPointingsSuccessMessage && (
+          <Alert color="success" className="mt-5">
+            {addPointingsSuccessMessage}
+          </Alert>
+        )}
+        {addPointingsErrorMessage && (
+          <Alert color="failure" className="mt-5">
+            {addPointingsErrorMessage}
+          </Alert>
+        )}
+        {error && (
+          <Alert color="success" className="mt-5">
+            {error}
+          </Alert>
+        )}
       </form>
     </div>
   );

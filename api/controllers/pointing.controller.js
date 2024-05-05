@@ -3,7 +3,7 @@ import Pointing from '../models/pointing.model.js';
 export const createPointing = async (req, res) => {  
   const pointing = new Pointing({
     ...req.body,
-    createdBy: req.user._id,
+   
   });
 
   try {

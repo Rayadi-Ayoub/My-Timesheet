@@ -60,7 +60,26 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+
+    addPointingsStart: (state) => {
+      state.loading = true;
+      state.addPointingsSuccess = null;
+      state.addPointingsError = null;
+    },
+    addPointingsSuccess: (state, action) => {
+      state.loading = false;
+      state.addPointingsSuccess = action.payload;
+    },
+    addPointingsFailure: (state, action) => {
+      state.loading = false;
+      state.addPointingsError = action.payload;
+    },
+
   },
+
+
+
+
 });
 
 export const {
@@ -74,5 +93,8 @@ export const {
   deleteUserSuccess,
   deleteUserFailure,
   signoutSuccess,
+  addPointingsStart,
+  addPointingsSuccess,
+  addPointingsFailure,
 } = userSlice.actions;
 export default userSlice.reducer;

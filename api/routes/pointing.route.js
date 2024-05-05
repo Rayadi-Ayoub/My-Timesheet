@@ -1,18 +1,20 @@
 import express from "express";
 import {
-  addPointing,
+  createPointing,
+  updatePointing,
   deletePointing,
-    getPointingsByUser,
 } from "../controllers/pointing.controller.js";
 
+import { verifyToken } from "../utils/verifyUser.js";
 
 
 
 const router = express.Router();
 
 
-router.post("/addPointing", addPointing);
-router.delete("/deletePointing/:pointingId", deletePointing);
-router.get("/getPointingsByUser/:userId", getPointingsByUser);
+router.post('/pointings',verifyToken,createPointing);
+router.patch('/pointings/:id', verifyToken,updatePointing);
+router.delete('/pointings/:id', verifyToken , deletePointing);
 
 export default router;
+

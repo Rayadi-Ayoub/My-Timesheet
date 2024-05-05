@@ -1,43 +1,45 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const PointingSchema = new mongoose.Schema(
   {
-    date: {
-      type: Date,
-    },
-
-    location: {
+    timeStart: {
       type: String,
+      required: true,
     },
-
-    noms: {
+    timeEnd: {
       type: String,
+      required: true,
     },
-
-    heuresdetravaillees: {
-      type: Number,
-    },
-
-    typetache: {
-      type: String,
-    },
-
-    nomtache: {
-      type: String,
-    },
-
-    idUser: {
+    pole: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      required: true,
+      ref: 'Pole',
     },
-
-    TypeTaches: [{ type: mongoose.Schema.Types.ObjectId, ref: "TypeTache" }],
-
-    taches: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tache" }],
-
-    societes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Societe" }],
+    societe: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Societe',
+    },
+    typeTache: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'TypeTache',
+    },
+    tache: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Tache',
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export default mongoose.model("Pointing", PointingSchema);
+const Pointing = mongoose.model('Pointing', PointingSchema);
+export default Pointing;

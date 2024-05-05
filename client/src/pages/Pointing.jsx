@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "flowbite-react";
-import { useState, useEffect } from "react";
 
 function Pointing() {
   const [poles, setPoles] = useState([]);
@@ -9,6 +8,8 @@ function Pointing() {
   const [typeTaches, setTypeTaches] = useState([]);
   const [taches, setTaches] = useState([]);
   const [selectedTypeTache, setSelectedTypeTache] = useState("");
+  const [timeStart, setTimeStart] = useState("");
+  const [timeEnd, setTimeEnd] = useState("");
 
   useEffect(() => {
     fetchPoles();
@@ -58,13 +59,50 @@ function Pointing() {
     }
   };
 
+  const handleTimeStartChange = (event) => {
+    setTimeStart(event.target.value);
+  };
+
+  const handleTimeEndChange = (event) => {
+    setTimeEnd(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const pointingData = {
+      pole: selectedPole,
+      societe: societes[0]._id, // assuming the first societe is selected
+      typeTache: selectedTypeTache,
+      tache: taches[0]._id, // assuming the first tache is selected
+      timeStart,
+      timeEnd,
+    };
+
+    const response = await fetch("/api/pointings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pointingData),
+    });
+
+    if (response.ok) {
+      // handle successful submission
+      console.log("Pointing added successfully");
+    } else {
+      // handle error
+      console.log("Error adding pointing");
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto  p-3 w-full ">
       <h1 className="my-7 text-center font-semibold text-3xl ">
         Add Your Pointing
       </h1>
 
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col space-y-2">
           <label
             htmlFor="timeStart"
@@ -76,6 +114,7 @@ function Pointing() {
             type="time"
             id="timeStart"
             name="timeStart"
+            onChange={handleTimeStartChange}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
           />
           <label
@@ -88,6 +127,7 @@ function Pointing() {
             type="time"
             id="timeEnd"
             name="timeEnd"
+            onChange={handleTimeEndChange}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
           />
         </div>

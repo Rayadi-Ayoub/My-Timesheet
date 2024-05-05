@@ -1,72 +1,48 @@
-import Pointing from "../models/pointing.model.js";
+import Pointing from '../models/pointing.model.js';
 
-export const addPointing = async (req, res) => {
+export const createPointing = async (req, res) => {  
   const pointing = new Pointing({
-    date: req.body.date,
-    location: req.body.location,
-    noms: req.body.noms,
-    heuresdetravaillees: req.body.heuresdetravaillees,
-    typetache: req.body.typetache,
-    nomtache: req.body.nomtache,
-    idUser: req.body.idUser,
-    Users: req.body.Users,
-    TypeTaches: req.body.TypeTaches,
-    taches: req.body.taches,
-    societes: req.body.societes,
+    ...req.body,
+    createdBy: req.user._id,
   });
 
   try {
-    const newPointing = await pointing.save();
-    res.status(201).json(newPointing);
+    await pointing.save();
+    res.status(201).send(pointing);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).send(error);
   }
 };
 
-// export const addPointing = async (req, res) => {
-//   const pointing = req.body;
-//   const newPointing = new Pointing(pointing);
-//   try {
-//     await newPointing.save();
-//     res.status(201).json(newPointing);
-//   } catch (error) {
-//     res.status(409).json({ message: error.message });
-//   }
-// }
+export const updatePointing = async (req, res) => {
+  try {
+    const pointing = await Pointing.findOne({ _id: req.params.id, createdBy: req.user._id });
+
+    if (!pointing) {
+      return res.status(404).send();
+    }
+
+    Object.keys(req.body).forEach((key) => {
+      pointing[key] = req.body[key];
+    });
+
+    await pointing.save();
+    res.send(pointing);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
 
 export const deletePointing = async (req, res) => {
-  const { pointingId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(pointingId)) return res.status(404).send(`No pointing with id: ${pointingId}`);
-  await Pointing.findByIdAndRemove(pointingId);
-  res.json({ message: "Pointing deleted successfully." });
-}
-
-export const getPointingsByUser = async (req, res) => {
-  const { userId } = req.params;
   try {
-    const pointings = await Pointing.find({ idUser: userId });
-    res.status(200).json(pointings);
+    const pointing = await Pointing.findOneAndDelete({ _id: req.params.id, createdBy: req.user._id });
+
+    if (!pointing) {
+      return res.status(404).send();
+    }
+
+    res.send(pointing);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).send(error);
   }
-}
-
-export const getPointing = async (req, res) => {
-  const { pointingId } = req.params;
-  try {
-    const pointing = await Pointing.findById(pointingId);
-    res.status(200).json(pointing);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-}
-
-
-// export const getPointingByUserId = async (req, res) => {
-//   try {
-//     const pointings = await Pointing.find({ idUser: req.params.userId }).populate('Users').populate('TypeTaches').populate('taches').populate('societes');
-//     res.json(pointings);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+};

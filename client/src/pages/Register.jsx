@@ -87,10 +87,10 @@ export default function Register() {
                 className="block w-full p-2 mb-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
                 <option value="">Choose a poste</option>
-                <option value="AD">ADMIN</option>
-                <option value="MA">MANAGER</option>
-                <option value="US">USER</option>
-                <option value="CO">CONTROLEUR</option>
+                <option value="admin">ADMIN</option>
+                <option value="manager">MANAGER</option>
+                <option value="user">USER</option>
+                <option value="controller">CONTROLEUR</option>
               </select>
             </div>
             <div>

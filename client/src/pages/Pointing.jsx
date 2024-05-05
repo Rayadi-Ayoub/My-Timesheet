@@ -19,8 +19,8 @@ function Pointing() {
   const [timeEnd, setTimeEnd] = useState("");
   const [loading, setLoading] = useState(false);
   const [addPointingsSuccessMessage, setAddPointingsSuccessMessage] =
-    useState(""); // Add this
-  const [addPointingsErrorMessage, setAddPointingsErrorMessage] = useState(""); // Add this
+    useState("");
+  const [addPointingsErrorMessage, setAddPointingsErrorMessage] = useState("");
   const dispatch = useDispatch();
   useEffect(() => {
     fetchPoles();

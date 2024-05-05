@@ -10,6 +10,7 @@ const TacheSchema = new mongoose.Schema({
     prixforfitaire:{
         type: Number,
         required: true,
+        default: 0,
     },
     
     },

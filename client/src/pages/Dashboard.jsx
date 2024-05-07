@@ -8,6 +8,7 @@ import Company from "../pages/Company";
 import Project from "../pages/Project";
 import Pointing from "../pages/Pointing";
 import Tasks from "../pages/Tasks";
+import Reporting from "../pages/Reporting";
 
 export default function Dashboard() {
   const location = useLocation();
@@ -46,6 +47,9 @@ export default function Dashboard() {
 
       {/* <pointing /> */}
       {tab === "pointing" && <Pointing />}
+
+      {/* Reporting... */}
+      {tab === "reporting" && <Reporting />}
     </div>
   );
 }

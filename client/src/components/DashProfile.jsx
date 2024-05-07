@@ -133,7 +133,7 @@ export default function DashProfile() {
         <input
           type="file"
           accept="image/*"
-          onChange={handleImageChange} // Corrected here
+          onChange={handleImageChange}
           ref={filePickerRef}
           hidden
         />

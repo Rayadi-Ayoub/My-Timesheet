@@ -35,6 +35,11 @@ const PointingSchema = new mongoose.Schema(
       required: true,
       ref: 'User',
     },
+    timeDifference: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
   },
   {
     timestamps: true,

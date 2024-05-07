@@ -9,6 +9,7 @@ import { Link, useLocation } from "react-router-dom";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import { TbReport } from "react-icons/tb";
 
 export default function Dashsidebar() {
   const location = useLocation();
@@ -50,14 +51,14 @@ export default function Dashsidebar() {
               labelColor="dark"
               as="div"
             >
-              profile
+              Profile
             </Sidebar.Item>
           </Link>
 
           {currentUser.isAdmin && (
             <Link to="/dashboard?tab=users">
               <Sidebar.Item active={tab === "users"} icon={HiOutlineUserGroup}>
-                users
+                Users
               </Sidebar.Item>
             </Link>
           )}
@@ -65,7 +66,7 @@ export default function Dashsidebar() {
           {currentUser.isAdmin && (
             <Link to="/dashboard?tab=pole">
               <Sidebar.Item active={tab === "pole"} icon={GoArchive}>
-                pole
+                Pole
               </Sidebar.Item>
             </Link>
           )}
@@ -73,32 +74,35 @@ export default function Dashsidebar() {
           {currentUser.isAdmin && (
             <Link to="/dashboard?tab=company">
               <Sidebar.Item active={tab === "company"} icon={BsBuilding}>
-                company
+                Company
               </Sidebar.Item>
             </Link>
           )}
 
-          {currentUser.isAdmin && (
-            <Link to="/dashboard?tab=project">
-              <Sidebar.Item active={tab === "project"} icon={FaProjectDiagram}>
-                project
-              </Sidebar.Item>
-            </Link>
-          )}
-          {currentUser.isAdmin && (
-            <Link to="/dashboard?tab=Tasks">
-              <Sidebar.Item active={tab === "Tasks"} icon={FaTasks}>
-                Tasks
-              </Sidebar.Item>
-            </Link>
-          )}
-          {currentUser.isAdmin && (
-            <Link to="/dashboard?tab=pointing">
-              <Sidebar.Item active={tab === "pointing"} icon={CiTimer}>
-                pointing
-              </Sidebar.Item>
-            </Link>
-          )}
+          <Link to="/dashboard?tab=project">
+            <Sidebar.Item active={tab === "project"} icon={FaProjectDiagram}>
+              Project
+            </Sidebar.Item>
+          </Link>
+
+          <Link to="/dashboard?tab=Tasks">
+            <Sidebar.Item active={tab === "Tasks"} icon={FaTasks}>
+              Tasks
+            </Sidebar.Item>
+          </Link>
+
+          <Link to="/dashboard?tab=pointing">
+            <Sidebar.Item active={tab === "pointing"} icon={CiTimer}>
+              Pointing
+            </Sidebar.Item>
+          </Link>
+
+          <Link to="/dashboard?tab=reporting">
+            <Sidebar.Item active={tab === "Reporting"} icon={TbReport}>
+              Reporting
+            </Sidebar.Item>
+          </Link>
+
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"

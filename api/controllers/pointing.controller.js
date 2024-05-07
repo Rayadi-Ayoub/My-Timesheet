@@ -1,10 +1,14 @@
 import Pointing from '../models/pointing.model.js';
-import Tache from '../models/tache.model.js';
 
 export const createPointing = async (req, res) => {  
+  const timeStart = new Date(`1970-01-01T${req.body.timeStart}:00`);
+  const timeEnd = new Date(`1970-01-01T${req.body.timeEnd}:00`);
+  const diffInMilliseconds = Math.abs(timeEnd - timeStart);
+  const diffInHours = diffInMilliseconds / (1000 * 60 * 60); 
+
   const pointing = new Pointing({
     ...req.body,
-   
+    timeDifference: diffInHours,
   });
 
   try {
@@ -72,22 +76,3 @@ export const getAllPointings = async (req, res) => {
 
 
 
-export const calculateCost = async (req, res) => {
-  try {
-    const tache = await Tache.findById(req.params.id);
-    if (!tache) {
-      return res.status(404).json({ error: 'Tache not found' });
-    }
-
-    const timeStart = new Date(tache.timeStart);
-    const timeEnd = new Date(tache.timeEnd);
-    const diffInHours = Math.abs(timeEnd - timeStart) / 36e5; // Convert difference in milliseconds to hours
-
-    const prixforfitaire = tache.prixforfitaire;
-    const cost = diffInHours * prixforfitaire;
-
-    res.json({ cost });
-  } catch (error) {
-    res.status(500).json({ error: 'An error occurred while calculating the cost' });
-  }
-};

@@ -1,7 +1,5 @@
 import { Table } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-
 export default function Reporting() {
   const [pointing, setPointing] = useState([]);
 
@@ -34,9 +32,9 @@ export default function Reporting() {
                 <Table.Cell>
                   {new Date(pointing.createdAt).toLocaleDateString()}
                 </Table.Cell>
-                <Table.Cell>{pointing.createdBy}</Table.Cell>
-                <Table.Cell>{pointing.societe}</Table.Cell>
-                <Table.Cell>{pointing.tache}</Table.Cell>
+                <Table.Cell>{pointing.username}</Table.Cell>
+                <Table.Cell>{pointing.noms}</Table.Cell>
+                <Table.Cell>{pointing.nomtache}</Table.Cell>
                 <Table.Cell>{pointing.prixforfitaire}dt</Table.Cell>
                 <Table.Cell>{pointing.timeDifference}h</Table.Cell>
                 <Table.Cell>{pointing.pricePerHour}dt</Table.Cell>

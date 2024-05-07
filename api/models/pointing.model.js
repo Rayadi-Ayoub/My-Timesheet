@@ -43,7 +43,10 @@ const PointingSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
+  
+ 
+
 );
 
 const Pointing = mongoose.model('Pointing', PointingSchema);

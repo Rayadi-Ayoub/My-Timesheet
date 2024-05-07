@@ -64,15 +64,18 @@ export const getMyPointings = async (req, res) => {
   }
 };
 
+
+
+
 export const getAllPointings = async (req, res) => {
   try {
-    const pointings = await Pointing.find({});
+    const pointings = await Pointing.find({})
+      .populate('createdBy', 'username') 
+      .populate('tache', 'nomtache prixforfitaire') 
+      .populate('societe', 'noms'); 
     res.json(pointings);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while fetching the pointings' });
+ 
+    res.status(500).json([]); 
   }
 };
-
-
-
-

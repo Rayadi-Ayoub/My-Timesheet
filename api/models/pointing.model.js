@@ -40,6 +40,9 @@ const PointingSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
+    costPerHours: {
+      type: Number,
+    },
   },
   {
     timestamps: true,

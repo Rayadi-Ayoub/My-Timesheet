@@ -10,6 +10,7 @@ import { signoutSuccess } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { TbReport } from "react-icons/tb";
+import { MdDashboard } from "react-icons/md";
 
 export default function Dashsidebar() {
   const location = useLocation();
@@ -43,13 +44,19 @@ export default function Dashsidebar() {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
-          <Link to="/dashboard?tab=profile">
+          <Link to="/dashboard?tab=dashboard">
+            <Sidebar.Item active={tab === "dashboard"} icon={MdDashboard}>
+              Dashboard
+            </Sidebar.Item>
+          </Link>
+          <Link>
             <Sidebar.Item
+              as={Link}
+              to="/dashboard?tab=profile"
               active={tab === "profile"}
               icon={HiUser}
               label={currentUser.isAdmin ? "Admin" : "User"}
               labelColor="dark"
-              as="div"
             >
               Profile
             </Sidebar.Item>
@@ -115,3 +122,5 @@ export default function Dashsidebar() {
     </Sidebar>
   );
 }
+
+MdDashboard;

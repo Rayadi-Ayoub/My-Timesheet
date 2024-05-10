@@ -2,9 +2,9 @@ import { Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 
 export default function Reporting() {
-  const [pointings, setPointings] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [pointings, setPointings] = useState([]);
 
   useEffect(() => {
     fetchallpointings();
@@ -13,7 +13,7 @@ export default function Reporting() {
   const fetchallpointings = async () => {
     const response = await fetch(`/api/getpointings?page=${page}&limit=10`);
     const data = await response.json();
-    setPointings(Array.isArray(data.data) ? data.data : []);
+    setPointings(data.pointings);
     setTotalPages(data.totalPages);
   };
 
@@ -32,26 +32,31 @@ export default function Reporting() {
           <Table.HeadCell>Task price per hour</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {pointings.map((pointing) => (
-            <Table.Row
-              className="bg-white dark:border-gray-700 dark:bg-gray-800"
-              key={pointing._id}
-            >
-              <Table.Cell>
-                {pointings.createdAt &&
-                  new Date(pointing.createdAt).toLocaleDateString()}
-              </Table.Cell>
-              <Table.Cell>{pointing.createdBy?.username}</Table.Cell>
-              <Table.Cell>{pointing.societe?.noms}</Table.Cell>
-              <Table.Cell>{pointing.tache?.nomtache}</Table.Cell>
-              <Table.Cell>{pointing.tache?.prixforfitaire}dt</Table.Cell>
-              <Table.Cell>{pointing.timeDifference}h</Table.Cell>
-              <Table.Cell>{pointing.costPerHours}dt</Table.Cell>
-            </Table.Row>
-          ))}
+          {Array.isArray(pointings) &&
+            pointings.map((pointing) => (
+              <Table.Row
+                className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                key={pointing._id}
+              >
+                <Table.Cell>
+                  {pointing.createdAt &&
+                    new Date(pointing.createdAt).toLocaleDateString()}
+                </Table.Cell>
+                <Table.Cell>{pointing.createdBy?.username}</Table.Cell>
+                <Table.Cell>{pointing.societe?.noms}</Table.Cell>
+                <Table.Cell>{pointing.tache?.nomtache}</Table.Cell>
+                <Table.Cell>{pointing.tache?.prixforfitaire}dt</Table.Cell>
+                <Table.Cell>{pointing.timeDifference}h</Table.Cell>
+                <Table.Cell>{pointing.costPerHours}dt</Table.Cell>
+              </Table.Row>
+            ))}
         </Table.Body>
       </Table>
-      <nav aria-label="Page navigation example">
+
+      <nav
+        className="flex justify-center p-4"
+        aria-label="Page navigation example"
+      >
         <ul className="inline-flex -space-x-px text-base h-10">
           <li>
             <button

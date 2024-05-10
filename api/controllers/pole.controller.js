@@ -4,7 +4,7 @@ import Societe from '../models/societe.model.js';
 
 
 export const addPole = async (req, res) => {
-  console.log(req.file); // Add this line
+  console.log(req.file); 
 
   const { NomP, location } = req.body;
 
@@ -12,7 +12,7 @@ export const addPole = async (req, res) => {
     const newPole = new Pole({
       NomP,
       location,
-      imagepole: req.file ? req.file.path : "" // Check if req.file exists before accessing its path
+      imagepole: req.file ? req.file.path : "" 
     });
 
     await newPole.save();
@@ -108,7 +108,8 @@ export const getSocietesByPole = async (req, res) => {
 
 export const getAllSocietes = async (req, res) => {
   const societes = await Societe.find();
-  res.json(societes);
+  const totalSocietes = await Societe.countDocuments();
+  res.json({ societes, totalSocietes });
 };
 
 

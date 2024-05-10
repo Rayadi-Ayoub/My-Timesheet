@@ -1,12 +1,15 @@
 import Pointing from "../models/pointing.model.js";
-
+import moment from 'moment';
 import Tache from "../models/tache.model.js";
 
 export const createPointing = async (req, res) => {
   const timeStart = new Date(`1970-01-01T${req.body.timeStart}:00`);
   const timeEnd = new Date(`1970-01-01T${req.body.timeEnd}:00`);
   const diffInMilliseconds = Math.abs(timeEnd - timeStart);
-  const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
+  let diffInHours = diffInMilliseconds / (1000 * 60 * 60);
+
+ 
+  diffInHours = parseFloat(diffInHours.toFixed(2));
 
   const pointing = new Pointing({
     ...req.body,
@@ -14,16 +17,14 @@ export const createPointing = async (req, res) => {
   });
 
   try {
-    // Fetch the tache document
+    
     const tache = await Tache.findById(pointing.tache);
     if (!tache) {
       return res.status(404).send({ message: "Tache not found" });
     }
 
-    // Calculate costPerHours
-    const costPerHours = diffInHours * tache.prixforfitaire;
-
-    // Add costPerHours to the pointing document
+   
+    const costPerHours = parseFloat((diffInHours * tache.prixforfitaire).toFixed(3));
     pointing.costPerHours = costPerHours;
 
     await pointing.save();
@@ -72,20 +73,11 @@ export const deletePointing = async (req, res) => {
   }
 };
 
-export const getMyPointings = async (req, res) => {
-  try {
-    const pointings = await Pointing.find({ createdBy: req.user._id });
-    res.json(pointings);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching the pointings" });
-  }
-};
+
 export const getAllPointings = async (req, res) => {
-  const page = Number(req.query.page) || 1; // Get the page number from the query parameters (default to 1 if not provided)
-  const limit = Number(req.query.limit) || 10; // Get the number of items per page from the query parameters (default to 10 if not provided)
-  const skip = (page - 1) * limit; // Calculate the number of documents to skip
+  const page = Number(req.query.page) || 1; 
+  const limit = Number(req.query.limit) || 10; 
+  const skip = (page - 1) * limit; 
 
   try {
     const pointings = await Pointing.find({})
@@ -105,4 +97,57 @@ export const getAllPointings = async (req, res) => {
   } catch (error) {
     res.status(500).json([]);
   }
+};
+
+
+
+export const getPointingsByUserId = async (req, res) => {
+  const userId = req.params.userId;
+  const pointings = await Pointing.find({ createdBy: userId });
+
+  const totalTimeDifferenceByMonth = pointings.reduce((acc, pointing) => {
+    const month = moment(pointing.createdAt).format('YYYY-MM');
+    const week = moment(pointing.createdAt).format('YYYY-ww');
+    const day = moment(pointing.createdAt).format('YYYY-MM-DD');
+    const timeDifference = moment(pointing.timeEnd, 'HH:mm').diff(moment(pointing.timeStart, 'HH:mm'), 'hours');
+
+    if (!acc.monthly[month]) {
+      acc.monthly[month] = 0;
+    }
+    if (!acc.weekly[week]) {
+      acc.weekly[week] = 0;
+    }
+    if (!acc.daily[day]) {
+      acc.daily[day] = 0;
+    }
+
+    acc.monthly[month] += timeDifference;
+    acc.weekly[week] += timeDifference;
+    acc.daily[day] += timeDifference;
+
+    return acc;
+  }, { monthly: {}, weekly: {}, daily: {} });
+
+  res.json({ pointings, totalTimeDifferenceByMonth });
+};
+
+export const getMostSelectedSociete = async (req, res) => {
+  const pointings = await Pointing.find().populate('societe');
+
+  const societeCounts = pointings.reduce((acc, pointing) => {
+    const societeName = pointing.societe.noms;
+
+    if (!acc[societeName]) {
+      acc[societeName] = 0;
+    }
+
+    acc[societeName] += 1;
+
+    return acc;
+  }, {});
+
+  
+  const mostSelectedSociete = Object.keys(societeCounts).reduce((a, b) => societeCounts[a] > societeCounts[b] ? a : b);
+
+  res.json({ mostSelectedSociete });
 };

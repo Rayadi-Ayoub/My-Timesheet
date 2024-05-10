@@ -9,6 +9,7 @@ import Project from "../pages/Project";
 import Pointing from "../pages/Pointing";
 import Tasks from "../pages/Tasks";
 import Reporting from "../pages/Reporting";
+import DashboardComp from "../components/DashboardComp";
 
 export default function Dashboard() {
   const location = useLocation();
@@ -50,6 +51,9 @@ export default function Dashboard() {
 
       {/* Reporting... */}
       {tab === "reporting" && <Reporting />}
+
+      {/* Dashboard Comp */}
+      {tab === "dashboard" && <DashboardComp />}
     </div>
   );
 }

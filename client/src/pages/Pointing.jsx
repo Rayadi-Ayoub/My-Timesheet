@@ -144,7 +144,7 @@ function Pointing() {
             id="timeStart"
             name="timeStart"
             onChange={handleTimeStartChange}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-dark-200"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
           <label
             htmlFor="timeEnd"
@@ -157,13 +157,13 @@ function Pointing() {
             id="timeEnd"
             name="timeEnd"
             onChange={handleTimeEndChange}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-dark-200"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
         </div>
         <select
           value={selectedPole}
           onChange={handleChange}
-          className="w-full px-3 py-3 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
           <option value="">Please select a pole</option>
           {poles.map((pole, index) => (
@@ -173,7 +173,7 @@ function Pointing() {
           ))}
         </select>
         {selectedPole && (
-          <select className="w-full px-3 py-3 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline">
+          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <option value="">Please select a Company</option>
             {societes.map((societe, index) => (
               <option key={index} value={societe._id}>
@@ -185,7 +185,7 @@ function Pointing() {
         <select
           value={selectedTypeTache}
           onChange={handleTypeTacheChange}
-          className="w-full px-3 py-3 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
           <option value="">Please select a TypeTache</option>
           {typeTaches.map((typeTache, index) => (
@@ -195,7 +195,7 @@ function Pointing() {
           ))}
         </select>
         {selectedTypeTache && (
-          <select className="w-full px-3 py-3 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline">
+          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <option value="">Please select a Tache</option>
             {taches.map((tache, index) => (
               <option key={index} value={tache._id}>

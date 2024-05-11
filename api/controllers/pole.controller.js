@@ -107,9 +107,27 @@ export const getSocietesByPole = async (req, res) => {
 
 
 export const getAllSocietes = async (req, res) => {
+
   const societes = await Societe.find();
   const totalSocietes = await Societe.countDocuments();
-  res.json({ societes, totalSocietes });
+const  now = new Date();
+
+ const oneMonthAgo = new Date(
+ now.getFullYear(),
+  now.getMonth()  - 1,
+  now.getDate()
+  );
+
+const SocieteLastMonth = await Societe.countDocuments({
+    createdAt: { $gte: oneMonthAgo }
+  });
+
+
+  res.json({ societes, totalSocietes , SocieteLastMonth  });
+
+
+
+
 };
 
 

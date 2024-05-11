@@ -3,16 +3,43 @@ import Chart from "chart.js/auto";
 
 function MyChart({ data }) {
   const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null); // Add this line
 
   useEffect(() => {
     if (chartRef.current) {
+      // If there is an old Chart instance, destroy it
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+
+      // All days of the week
+      const daysOfWeek = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+
       // labels
-      const labels = Object.keys(data.daily);
+      const labels = daysOfWeek;
 
       // data
-      const chartData = Object.values(data.daily);
+      const chartData = daysOfWeek.map((day) => {
+        // Get the date string that corresponds to the current day
+        const dateStr = Object.keys(data.daily).find((dateStr) => {
+          const date = new Date(dateStr);
+          return date.toLocaleDateString("en-US", { weekday: "long" }) === day;
+        });
 
-      new Chart(chartRef.current, {
+        // If there is data for the current day, return it, otherwise return 0
+        return dateStr ? data.daily[dateStr] : 0;
+      });
+
+      // Create a new Chart instance and store it in the ref
+      chartInstanceRef.current = new Chart(chartRef.current, {
         type: "bar",
         data: {
           labels: labels,
@@ -20,24 +47,8 @@ function MyChart({ data }) {
             {
               label: "Number of hours",
               data: chartData,
-              backgroundColor: [
-                "rgba(255, 26, 104, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-                "rgba(255, 159, 64, 0.2)",
-                "rgba(0, 0, 0, 0.2)",
-              ],
-              borderColor: [
-                "rgba(255, 26, 104, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-                "rgba(255, 159, 64, 1)",
-                "rgba(0, 0, 0, 1)",
-              ],
+              backgroundColor: "rgba(255, 26, 104, 0.2)", // single color
+              borderColor: "rgba(255, 26, 104, 1)", // single color
               borderWidth: 1,
             },
           ],

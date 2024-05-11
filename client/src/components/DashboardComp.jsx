@@ -15,12 +15,14 @@ function DashboardComp() {
     useState(0);
   const [monthly, setmonthly] = useState({ monthly: 0, weekly: 0, daily: 0 });
   const [totalSocietes, setTotalSocietes] = useState(0);
+  const [societeLastMonth, setSocietelastMonth] = useState(0);
   const [usersLastMonth, setUsersLastMonth] = useState([]);
+
   const [mostSelectedSociete, setMostSelectedSociete] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (currentUser.isAdmin) {
+    if (currentUser) {
       fetchUsers();
       fetchSociete();
       fetchmypointing();
@@ -54,10 +56,11 @@ function DashboardComp() {
   };
   const fetchSociete = async () => {
     try {
-      const res = await fetch(`/api/societes?limit=5`);
+      const res = await fetch(`/api/societes`);
       const data = await res.json();
       if (res.ok) {
         setTotalSocietes(data.totalSocietes);
+        setSocietelastMonth(data.societeLastMonth);
       }
     } catch (error) {
       console.log(error.message);
@@ -107,7 +110,7 @@ function DashboardComp() {
           <div className="flex gap-2 text-sm">
             <span className="text-green-500 flex items-center ">
               <HiArrowNarrowUp />
-              {usersLastMonth}
+              {societeLastMonth}
             </span>
             <div className="text-gray-500">Last month</div>
           </div>
@@ -139,7 +142,9 @@ function DashboardComp() {
               <p className="text-2xl ">
                 {totalTimeDifferenceByMonth &&
                   totalTimeDifferenceByMonth.monthly &&
-                  totalTimeDifferenceByMonth.monthly["2024-05"]}
+                  totalTimeDifferenceByMonth.monthly[
+                    new Date().toISOString().slice(0, 7)
+                  ]}
                 <span className="p-2">Hours</span>
               </p>
             </div>
@@ -150,10 +155,10 @@ function DashboardComp() {
               <HiArrowNarrowUp />
               {totalTimeDifferenceByMonth &&
                 totalTimeDifferenceByMonth.monthly &&
-                totalTimeDifferenceByMonth.monthly["2024-05"]}{" "}
+                totalTimeDifferenceByMonth.monthly[
+                  new Date().toISOString().slice(0, 7)
+                ]}{" "}
             </span>
-
-            <div className="text-gray-500">Last month</div>
           </div>
         </div>
       </div>

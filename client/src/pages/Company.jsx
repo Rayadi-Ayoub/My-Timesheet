@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, TextInput, Spinner, Alert } from "flowbite-react";
+import {
+  Button,
+  Modal,
+  TextInput,
+  Spinner,
+  Alert,
+  Table,
+} from "flowbite-react";
 import { IoMdAdd } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 
@@ -10,8 +17,10 @@ function Company() {
   const [loading, setLoading] = useState(false);
   const [poles, setPoles] = useState([]);
   const [selectedPole, setSelectedPole] = useState("");
+  const [societes, setSocietes] = useState([]);
   useEffect(() => {
     fetchPoles();
+    fetchSociete();
   }, []);
 
   const fetchPoles = async () => {
@@ -19,6 +28,24 @@ function Company() {
     const data = await response.json();
     setPoles(data);
   };
+  const fetchSociete = async () => {
+    try {
+      const res = await fetch(`/api/societes`);
+      const data = await res.json();
+      if (res.ok) {
+        // Check if data.societes is an array before setting the state
+        if (Array.isArray(data.societes)) {
+          setSocietes(data.societes);
+        } else {
+          console.error("Data.societes is not an array:", data.societes);
+          setSocietes([]);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
@@ -68,7 +95,36 @@ function Company() {
           Add Company
         </Button>
       </div>
-
+      <div className="table-auto overflow-x-scroll md:mx-auto p-10 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
+        <Table hoverable className="shadow-md">
+          <Table.Head>
+            <Table.HeadCell>Date created</Table.HeadCell>
+            <Table.HeadCell>Societe Name</Table.HeadCell>
+            <Table.HeadCell>Action</Table.HeadCell>
+          </Table.Head>
+          {societes.map((societe) => (
+            <Table.Body className="divide-y" key={societe._id}>
+              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                <Table.Cell>
+                  {new Date(societe.createdAt).toLocaleDateString()}
+                </Table.Cell>
+                <Table.Cell>{societe.noms}</Table.Cell>
+                <Table.Cell>
+                  <span
+                    // onClick={() => {
+                    //   setShowModal(true);
+                    //   setPoleIdToDelete(pole._id);
+                    // }}
+                    className="font-medium text-red-500 hover:underline cursor-pointer"
+                  >
+                    Delete
+                  </span>
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          ))}
+        </Table>
+      </div>
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}

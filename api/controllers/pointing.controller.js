@@ -1,6 +1,7 @@
 import Pointing from "../models/pointing.model.js";
 import moment from 'moment';
 import Tache from "../models/tache.model.js";
+import User from "../models/user.model.js";
 
 export const createPointing = async (req, res) => {
   const timeStart = new Date(`1970-01-01T${req.body.timeStart}:00`);
@@ -8,7 +9,6 @@ export const createPointing = async (req, res) => {
   const diffInMilliseconds = Math.abs(timeEnd - timeStart);
   let diffInHours = diffInMilliseconds / (1000 * 60 * 60);
 
- 
   diffInHours = parseFloat(diffInHours.toFixed(2));
 
   const pointing = new Pointing({
@@ -17,15 +17,22 @@ export const createPointing = async (req, res) => {
   });
 
   try {
-    
     const tache = await Tache.findById(pointing.tache);
     if (!tache) {
       return res.status(404).send({ message: "Tache not found" });
     }
 
-   
     const costPerHours = parseFloat((diffInHours * tache.prixforfitaire).toFixed(3));
     pointing.costPerHours = costPerHours;
+
+    const user = await User.findById(pointing.createdBy);
+
+    // Calculate costPerEmp
+    const costPerEmp = parseFloat((diffInHours * user.employeeCost).toFixed(3));
+    pointing.costPerEmp = costPerEmp ;
+
+
+ 
 
     await pointing.save();
     res.status(201).send(pointing);

@@ -59,8 +59,9 @@ function DashboardComp() {
       const res = await fetch(`/api/societes`);
       const data = await res.json();
       if (res.ok) {
+        console.log(data);
         setTotalSocietes(data.totalSocietes);
-        setSocietelastMonth(data.societeLastMonth);
+        setSocietelastMonth(data.SocieteLastMonth);
       }
     } catch (error) {
       console.log(error.message);
@@ -133,6 +134,7 @@ function DashboardComp() {
             <div className="text-gray-500">Last month</div>
           </div>
         </div>
+
         <div className=" flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-md shadow-md">
           <div className="flex justify-between">
             <div className="">
@@ -162,11 +164,18 @@ function DashboardComp() {
           </div>
         </div>
       </div>
-      <div>
-        {/* Use MyChart component and pass totalTimeDifferenceByMonth as a prop */}
-        {totalTimeDifferenceByMonth && (
-          <MyChart data={totalTimeDifferenceByMonth} />
-        )}
+      <div className=" flex p-3">
+        <div className=" flex flex-col p-5 dark:bg-slate-800 gap-4 md:w-100 w-full rounded-md shadow-md">
+          <h3 className=" flex text-gray-500 text-md uppercase justify-center">
+            CHART FOR NUMBER OF HOURS WORKED
+          </h3>
+
+          <div className="flex justify-between">
+            {totalTimeDifferenceByMonth && (
+              <MyChart data={totalTimeDifferenceByMonth} />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

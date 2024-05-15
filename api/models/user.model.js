@@ -42,6 +42,12 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    employeeCost: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+
     profilePicture: {
       type: String,
       default:

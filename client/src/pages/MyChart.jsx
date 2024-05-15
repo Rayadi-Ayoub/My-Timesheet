@@ -3,7 +3,7 @@ import Chart from "chart.js/auto";
 
 function MyChart({ data }) {
   const chartRef = useRef(null);
-  const chartInstanceRef = useRef(null); // Add this line
+  const chartInstanceRef = useRef(null);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -12,30 +12,13 @@ function MyChart({ data }) {
         chartInstanceRef.current.destroy();
       }
 
-      // All days of the week
-      const daysOfWeek = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
-
       // labels
-      const labels = daysOfWeek;
+      const labels = Object.keys(data.daily);
 
       // data
-      const chartData = daysOfWeek.map((day) => {
-        // Get the date string that corresponds to the current day
-        const dateStr = Object.keys(data.daily).find((dateStr) => {
-          const date = new Date(dateStr);
-          return date.toLocaleDateString("en-US", { weekday: "long" }) === day;
-        });
-
+      const chartData = labels.map((dateStr) => {
         // If there is data for the current day, return it, otherwise return 0
-        return dateStr ? data.daily[dateStr] : 0;
+        return data.daily[dateStr] || 0;
       });
 
       // Create a new Chart instance and store it in the ref

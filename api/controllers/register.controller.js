@@ -16,6 +16,7 @@ export const register = async (req, res, next) => {
     phone,
     email,
     password,
+    employeeCost,
   } = req.body;
 
   const existingUser = await User.findOne({ matricule });
@@ -33,6 +34,7 @@ export const register = async (req, res, next) => {
     !phone ||
     !email ||
     !password ||
+    !employeeCost ||
     username === "" ||
     matricule === "" ||
     poste === "" ||
@@ -41,7 +43,8 @@ export const register = async (req, res, next) => {
     address === "" ||
     phone === "" ||
     email === "" ||
-    password === ""
+    password === "" || 
+    employeeCost === ""
     
   ) {
     console.log("error");
@@ -52,9 +55,9 @@ export const register = async (req, res, next) => {
   const hashPassword = bcryptjs.hashSync(password, 10);
 
   
-  // if ( !req.user.isAdmin) {
-  //   return next(errorHandler(400, "You Are not allowed to register a user"));
-  // }
+  if ( !req.user.isAdmin) {
+    return next(errorHandler(400, "You Are not allowed to register a user"));
+  }
 
   const newUser = new User({
     username,
@@ -65,6 +68,7 @@ export const register = async (req, res, next) => {
     address,
     phone,
     email,
+    employeeCost,
     password: hashPassword,
   });
   try {

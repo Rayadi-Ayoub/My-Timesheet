@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Spinner, Button, Alert } from "flowbite-react";
+import { Spinner, Button, Alert , Label, Textarea } from "flowbite-react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   addPointingsStart,
@@ -18,6 +18,7 @@ function Pointing() {
   const [timeStart, setTimeStart] = useState("");
   const [timeEnd, setTimeEnd] = useState("");
   const [loading, setLoading] = useState(false);
+  const [comment, setComment] = useState("");
   const [addPointingsSuccessMessage, setAddPointingsSuccessMessage] =
     useState("");
   const [addPointingsErrorMessage, setAddPointingsErrorMessage] = useState("");
@@ -78,6 +79,10 @@ function Pointing() {
     setTimeEnd(event.target.value);
   };
 
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -93,7 +98,8 @@ function Pointing() {
       tache: taches[0]._id,
       timeStart,
       timeEnd,
-      createdBy: currentUser._id, // replace this with the actual user ID
+      comment,
+      createdBy: currentUser._id, 
     };
 
     dispatch(addPointingsStart());
@@ -204,6 +210,13 @@ function Pointing() {
             ))}
           </select>
         )}
+        <div className="max-w-md">
+      <div className="mb-2 block">
+        <Label htmlFor="comment" value="Your comment" />
+      </div>
+      <Textarea id="comment" placeholder="Leave a comment..." required rows={4} 
+      onChange={handleCommentChange}/>
+    </div>
         <Button
           type="submit"
           gradientDuoTone="purpleToBlue"

@@ -1,16 +1,17 @@
+import React, { useState } from "react";
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
-import { useState } from "react";
 import { Datepicker } from "flowbite-react";
 
 export default function Register() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, seterrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
     console.log(formData);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -23,14 +24,15 @@ export default function Register() {
       !formData.address ||
       !formData.phone ||
       !formData.email ||
-      !formData.password
+      !formData.password ||
+      !formData.employeeCost
     ) {
-      return seterrorMessage("Please fill out all fields.");
+      return setErrorMessage("Please fill out all fields.");
     }
 
     try {
       setLoading(true);
-      seterrorMessage(null);
+      setErrorMessage(null);
       const res = await fetch("/api/register/register", {
         method: "POST",
         headers: {
@@ -41,11 +43,11 @@ export default function Register() {
 
       const data = await res.json();
       if (data.success === false) {
-        seterrorMessage(data.message);
+        setErrorMessage(data.message);
       }
       setLoading(false);
     } catch (error) {
-      seterrorMessage(error.message);
+      setErrorMessage(error.message);
       setLoading(false);
     }
   };
@@ -74,12 +76,7 @@ export default function Register() {
               />
             </div>
             <div>
-              <label
-                htmlFor="poste"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Poste
-              </label>
+              <Label value="Poste" />
               <select
                 id="poste"
                 value={formData.poste}
@@ -94,12 +91,7 @@ export default function Register() {
               </select>
             </div>
             <div>
-              <label
-                htmlFor="departement"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Departement
-              </label>
+              <Label value="Departement" />
               <select
                 id="departement"
                 value={formData.departement}
@@ -113,21 +105,28 @@ export default function Register() {
                 <option value="Juridique">Juridique</option>
               </select>
             </div>
+            <div>
+              <Label value="Employee Cost" />
+              <TextInput
+                type="text"
+                placeholder="Employee Cost"
+                id="employeeCost"
+                onChange={handleChange}
+              />
+            </div>
           </form>
         </div>
         <div>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
-              <Label value="Hiring Date " />
-
+              <Label value="Hiring Date" />
               <TextInput id="hiringDate" type="date" onChange={handleChange} />
             </div>
-
             <div>
               <Label value="Address" />
               <TextInput
                 type="text"
-                placeholder="address"
+                placeholder="Address"
                 id="address"
                 onChange={handleChange}
               />
@@ -136,13 +135,13 @@ export default function Register() {
               <Label value="Phone" />
               <TextInput
                 type="text"
-                placeholder="phone"
+                placeholder="Phone"
                 id="phone"
                 onChange={handleChange}
               />
             </div>
             <div>
-              <Label value="Email " />
+              <Label value="Email" />
               <TextInput
                 type="email"
                 placeholder="name@company.com"
@@ -159,28 +158,28 @@ export default function Register() {
                 onChange={handleChange}
               />
             </div>
-            <Button
-              gradientDuoTone="purpleToPink"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Spinner size="sm" />
-                  <span className="pl-3">Loading...</span>
-                </>
-              ) : (
-                " Sign Up"
-              )}
-            </Button>
           </form>
-          {errorMessage && (
-            <Alert className="mt-5" color="failure">
-              {errorMessage}
-            </Alert>
-          )}
         </div>
       </div>
+      <form onSubmit={handleSubmit}>
+        <div className=" flex   gap-4 justify-center p-4 ">
+          <Button gradientDuoTone="purpleToPink" type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <Spinner size="sm" />
+                <span className="pl-3">Loading...</span>
+              </>
+            ) : (
+              "Sign Up"
+            )}
+          </Button>
+        </div>
+      </form>
+      {errorMessage && (
+        <Alert className="mt-5" color="failure">
+          {errorMessage}
+        </Alert>
+      )}
     </div>
   );
 }

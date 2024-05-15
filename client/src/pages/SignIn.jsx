@@ -47,7 +47,9 @@ export default function SignIn() {
   };
 
   return (
+    
     <div className="main-h-screen mt-20">
+      
       <div className=" flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5 ">
         {/* left */}
         <div className="flex-1">
@@ -99,6 +101,12 @@ export default function SignIn() {
               )}
             </Button>
           </form>
+          <div className='flex gap-2 text-sm mt-5'>
+            
+            <Link to='/reset-password' className='text-blue-500'>
+            <span> Forget Password ?</span> 
+            </Link>
+          </div>
           {errorMessage && (
             <Alert className="mt-5" color="failure">
               {errorMessage}

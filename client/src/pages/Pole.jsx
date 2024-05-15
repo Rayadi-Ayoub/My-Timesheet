@@ -17,6 +17,8 @@ function Pole() {
   const [errorMessage, seterrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [poles, setPoles] = useState([]);
+  const [poleIdToDelete, setPoleIdToDelete] = useState(null);
+
 
   useEffect(() => {
     fetchPoles();
@@ -125,13 +127,22 @@ function Pole() {
                 <Table.Cell>{pole.location}</Table.Cell>
                 <Table.Cell>
                   <span
-                    // onClick={() => {
-                    //   setShowModal(true);
-                    //   setPoleIdToDelete(pole._id);
-                    // }}
+                    onClick={() => {
+                      setShowModal(true);
+                      setPoleIdToDelete(pole._id);
+                    }}
                     className="font-medium text-red-500 hover:underline cursor-pointer"
                   >
                     Delete
+                  </span>
+                  <span
+                    onClick={() => {
+                      setShowModal(true);
+                      setPoleIdToDelete(pole._id);
+                    }}
+                    className="font-medium text-blue-500 hover:underline cursor-pointer p-3"
+                  >
+                    Update 
                   </span>
                 </Table.Cell>
               </Table.Row>
@@ -189,6 +200,7 @@ function Pole() {
           </form>
         </Modal.Body>
       </Modal>
+      
 
       {errorMessage && (
         <Alert className="mt-5" color="failure">

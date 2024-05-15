@@ -10,6 +10,11 @@ const PointingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    comment : {
+      type: String,
+      
+    },
+
     pole: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -42,6 +47,14 @@ const PointingSchema = new mongoose.Schema(
     },
     costPerHours: {
       type: Number,
+      default: 0,
+      required: true,
+    },
+
+    costPerEmp: {
+      type: Number,
+      default: 0,
+      required: true,
     },
   },
   {

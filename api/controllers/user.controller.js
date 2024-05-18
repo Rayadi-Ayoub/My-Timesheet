@@ -1,7 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/user.model.js';
-import {roles} from'./role.js'
+import {roles} from'./role.controller.js'
 
 export const test = (req, res) => {
   res.json({ message: 'API is working!' });

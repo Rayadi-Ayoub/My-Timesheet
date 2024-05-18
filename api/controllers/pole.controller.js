@@ -139,3 +139,24 @@ export const getAllPoles = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const updatePole = async (req, res) => {
+  const { NomP, location } = req.body;
+
+  try {
+    const updatedPole = await Pole.findByIdAndUpdate(
+      req.params.id,
+      { NomP, location, imagepole: req.file ? req.file.path : "" },
+      { new: true }
+    );
+
+    if (!updatedPole) {
+      return res.status(404).json({ message: 'No pole found with this id' });
+    }
+
+    res.status(200).json(updatedPole);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

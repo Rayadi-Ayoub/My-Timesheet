@@ -69,8 +69,9 @@ function DashboardComp() {
   };
   const fetchmypointing = async () => {
     try {
-      const res = await fetch(`/api/pointings/user/${currentUser?._id}`);
+        const res = await fetch(`/api/pointings/user/${currentUser?._id}`,{method: 'POST',body:{"week":"2024-20"}})
       const data = await res.json();
+      console.log("rqq",data)
       if (res.ok) {
         setTotalTimeDifferenceByMonth(data.totalTimeDifferenceByMonth);
         setmonthly(data.monthly);

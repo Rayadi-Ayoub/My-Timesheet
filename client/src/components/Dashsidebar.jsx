@@ -1,6 +1,6 @@
 import { Sidebar } from "flowbite-react";
 import { HiArrowSmRight, HiOutlineUserGroup, HiUser } from "react-icons/hi";
-import { FaTasks, FaProjectDiagram } from "react-icons/fa";
+import { FaTasks} from "react-icons/fa";
 import { CiTimer } from "react-icons/ci";
 import { GoArchive } from "react-icons/go";
 import { BsBuilding } from "react-icons/bs";
@@ -86,11 +86,7 @@ export default function Dashsidebar() {
             </Link>
           )}
 
-          <Link to="/dashboard?tab=project">
-            <Sidebar.Item active={tab === "project"} icon={FaProjectDiagram}>
-              Project
-            </Sidebar.Item>
-          </Link>
+          
 
           <Link to="/dashboard?tab=Tasks">
             <Sidebar.Item active={tab === "Tasks"} icon={FaTasks}>

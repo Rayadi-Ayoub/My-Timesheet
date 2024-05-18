@@ -98,6 +98,7 @@ export default function Reporting() {
             <Table.HeadCell>Username</Table.HeadCell>
             <Table.HeadCell>Company concerned</Table.HeadCell>
             <Table.HeadCell>Task completed</Table.HeadCell>
+            <Table.HeadCell>Comment</Table.HeadCell>
             <Table.HeadCell>Fixed price</Table.HeadCell>
             <Table.HeadCell>Number of hours workers</Table.HeadCell>
             <Table.HeadCell>Task price per hour</Table.HeadCell>
@@ -118,8 +119,10 @@ export default function Reporting() {
                 <Table.Cell>{pointing.societe?.noms}</Table.Cell>
                 <Table.Cell>
                   {pointing.tache?.nomtache}
+                  </Table.Cell>
+                 
                   <Table.Cell>{pointing.comment}</Table.Cell>
-                </Table.Cell>
+                
 
                 <Table.Cell>{pointing.tache?.prixforfitaire}dt</Table.Cell>
                 <Table.Cell>{pointing.timeDifference}h</Table.Cell>

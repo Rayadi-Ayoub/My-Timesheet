@@ -5,7 +5,6 @@ import DashProfile from "../components/DashProfile";
 import DashUsers from "../components/DashUsers";
 import Pole from "../pages/Pole";
 import Company from "../pages/Company";
-import Project from "../pages/Project";
 import Pointing from "../pages/Pointing";
 import Tasks from "../pages/Tasks";
 import Reporting from "../pages/Reporting";
@@ -40,9 +39,7 @@ export default function Dashboard() {
       {/* company... */}
       {tab === "company" && <Company />}
 
-      {/* <project /> */}
-      {tab === "project" && <Project />}
-
+      
       {/* <Tasks /> */}
       {tab === "Tasks" && <Tasks />}
 

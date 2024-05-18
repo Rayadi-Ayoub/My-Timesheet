@@ -24,6 +24,9 @@ export default function DashProfile() {
   const [showModel, setShowModel] = useState(false);
   const filePickerRef = useRef();
   const dispatch = useDispatch();
+ 
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [poles, setPoles] = useState([]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

@@ -9,7 +9,8 @@ import {
 } from "flowbite-react";
 import { IoMdAdd } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
-import { FaCheck, FaTimes } from "react-icons/fa";
+
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 function Pole() {
   const [showModal, setShowModal] = useState(false);
@@ -18,17 +19,18 @@ function Pole() {
   const [loading, setLoading] = useState(false);
   const [poles, setPoles] = useState([]);
   const [poleIdToDelete, setPoleIdToDelete] = useState(null);
+  const [showModeld, setShowModeld] = useState(false);
 
 
   useEffect(() => {
+    const fetchPoles = async () => {
+      const response = await fetch(`/api/poles`);
+      const data = await response.json();
+      setPoles(data);
+    };
+
     fetchPoles();
   }, []);
-
-  const fetchPoles = async () => {
-    const response = await fetch(`/api/poles`);
-    const data = await response.json();
-    setPoles(data);
-  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -63,30 +65,42 @@ function Pole() {
       setLoading(false);
     }
   };
-  const handleDeletePole = async (poleId) => {
+
+  const handleDeletePole = async () => {
+
     try {
-      setLoading(true);
-      seterrorMessage(null);
-      const res = await fetch(`/api/deletePole/${poleId}`, {
+      const res = await fetch(`/api/Deletepole/${poleIdToDelete}`, {
         method: "DELETE",
       });
 
       const data = await res.json();
-      if (!data.hasOwnProperty("success")) {
-        throw new Error("Unexpected server response");
-      }
       if (data.success === false) {
         seterrorMessage(data.message);
-      } else {
-        // If the deletion was successful, remove the pole from the local state
-        setPoles(poles.filter((pole) => pole._id !== poleId));
       }
-      setLoading(false);
-    } catch (error) {
-      seterrorMessage(error.message);
-      setLoading(false);
+      setShowModeld(false);
+      fetchPoles();
     }
+    catch (error) {
+      seterrorMessage(error.message);
+    }
+  }
+  const updatePole = async (poleId, updatedPole) => {
+    const response = await fetch(`/api/updatePole/${poleId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedPole),
+    });
+  
+    if (!response.ok) {
+      throw new Error('HTTP status ' + response.status);
+    }
+  
+    const data = await response.json();
+    return data;
   };
+
   return (
     <div className="w-full p-4">
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -104,8 +118,8 @@ function Pole() {
         <Table hoverable className="shadow-md">
           <Table.Head>
             <Table.HeadCell>Date created</Table.HeadCell>
-            <Table.HeadCell>Pole Name</Table.HeadCell>
             <Table.HeadCell>Pole Image</Table.HeadCell>
+            <Table.HeadCell>Pole Name</Table.HeadCell>
             <Table.HeadCell>Location</Table.HeadCell>
             <Table.HeadCell>Action</Table.HeadCell>
           </Table.Head>
@@ -128,7 +142,7 @@ function Pole() {
                 <Table.Cell>
                   <span
                     onClick={() => {
-                      setShowModal(true);
+                      setShowModeld(true);
                       setPoleIdToDelete(pole._id);
                     }}
                     className="font-medium text-red-500 hover:underline cursor-pointer"
@@ -200,6 +214,31 @@ function Pole() {
           </form>
         </Modal.Body>
       </Modal>
+      <Modal
+        show={showModeld}
+        onClose={() => setShowModeld(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this pole?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeletePole}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowModeld(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      
       
 
       {errorMessage && (

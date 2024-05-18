@@ -21,7 +21,7 @@ export const createPointing = async (req, res) => {
     if (!tache) {
       return res.status(404).send({ message: "Tache not found" });
     }
-
+ // Calculate costPerHours
     const costPerHours = parseFloat((diffInHours * tache.prixforfitaire).toFixed(3));
     pointing.costPerHours = costPerHours;
 
@@ -30,9 +30,6 @@ export const createPointing = async (req, res) => {
     // Calculate costPerEmp
     const costPerEmp = parseFloat((diffInHours * user.employeeCost).toFixed(3));
     pointing.costPerEmp = costPerEmp ;
-
-
- 
 
     await pointing.save();
     res.status(201).send(pointing);
@@ -80,7 +77,6 @@ export const deletePointing = async (req, res) => {
   }
 };
 
-
 export const getAllPointings = async (req, res) => {
   const page = Number(req.query.page) || 1; 
   const limit = Number(req.query.limit) || 10; 
@@ -106,43 +102,50 @@ export const getAllPointings = async (req, res) => {
   }
 };
 
-
-
 export const getPointingsByUserId = async (req, res) => {
   const userId = req.params.userId;
+  const week = req.body.week;
   const pointings = await Pointing.find({ createdBy: userId });
 
-  const totalTimeDifferenceByMonth = pointings.reduce((acc, pointing) => {
-    const month = moment(pointing.createdAt).format('YYYY-MM');
-    const week = moment(pointing.createdAt).format('YYYY-ww');
+  const filteredPointings = pointings.filter(pointing => {
+    const pointingWeek = moment(pointing.createdAt).format('YYYY-ww');
+    return pointingWeek === week;
+  });
+
+  const totalTimeDifferenceByWeek = filteredPointings.reduce((acc, pointing) => {
+  //const month = moment(pointing.createdAt).format('YYYY-MM');
+    //const week = moment(pointing.createdAt).format('YYYY-ww');
     const day = moment(pointing.createdAt).format('YYYY-MM-DD');
     const timeDifference = moment(pointing.timeEnd, 'HH:mm').diff(moment(pointing.timeStart, 'HH:mm'), 'hours');
 
-    if (!acc.monthly[month]) {
-      acc.monthly[month] = 0;
-    }
-    if (!acc.weekly[week]) {
-      acc.weekly[week] = 0;
-    }
+    //if (!acc.monthly[month]) {
+      //acc.monthly[month] = 0;
+    //}
+    //if (!acc.weekly[week]) {
+      //acc.weekly[week] = 0;
+    //}
     if (!acc.daily[day]) {
       acc.daily[day] = 0;
     }
 
-    acc.monthly[month] += timeDifference;
-    acc.weekly[week] += timeDifference;
+    //acc.monthly[month] += timeDifference;
+    //acc.weekly[week] += timeDifference;
     acc.daily[day] += timeDifference;
 
     return acc;
-  }, { monthly: {}, weekly: {}, daily: {} });
+  }, { 
+    //monthly: {},
+   //weekly: {},
+    daily: {} });
 
-  res.json({ pointings, totalTimeDifferenceByMonth });
+    res.json({ pointings: filteredPointings, totalTimeDifferenceByWeek });
 };
 
 export const getMostSelectedSociete = async (req, res) => {
   const pointings = await Pointing.find().populate('societe');
 
   const societeCounts = pointings.reduce((acc, pointing) => {
-    const societeName = pointing.societe.noms;
+    const societeName = pointing.societe ? pointing.societe.noms : null;
 
     if (!acc[societeName]) {
       acc[societeName] = 0;

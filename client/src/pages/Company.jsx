@@ -7,6 +7,7 @@ import {
   Alert,
   Table,
 } from "flowbite-react";
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { IoMdAdd } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 
@@ -18,6 +19,11 @@ function Company() {
   const [poles, setPoles] = useState([]);
   const [selectedPole, setSelectedPole] = useState("");
   const [societes, setSocietes] = useState([]);
+  const [showModeld, setShowModeld] = useState(false);
+  const [societeId, setSocieteId] = useState(null);
+
+
+
   useEffect(() => {
     fetchPoles();
     fetchSociete();
@@ -83,6 +89,24 @@ function Company() {
     }
   };
 
+  const handleDeleteSociete = async (societeId) => {
+    try {
+      const res = await fetch(`/api/deleteSociete/${societeId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        seterrorMessage(data.message);
+      }
+      setShowModeld(false);
+      fetchSociete();
+    }
+    catch (error) {
+      seterrorMessage(error.message);
+    }
+  }
+
+
   return (
     <div className="w-full p-4">
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -111,10 +135,11 @@ function Company() {
                 <Table.Cell>{societe.noms}</Table.Cell>
                 <Table.Cell>
                   <span
-                    // onClick={() => {
-                    //   setShowModal(true);
-                    //   setPoleIdToDelete(pole._id);
-                    // }}
+                    onClick={() => {
+                      setShowModeld(true);
+                      setSocieteId(societe._id);
+                    
+                    }}
                     className="font-medium text-red-500 hover:underline cursor-pointer"
                   >
                     Delete
@@ -178,6 +203,30 @@ function Company() {
               </div>
             </div>
           </form>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={showModeld}
+        onClose={() => setShowModeld(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this Societe ?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeleteSociete}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowModeld(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
         </Modal.Body>
       </Modal>
 

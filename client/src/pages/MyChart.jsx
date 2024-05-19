@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
-
-function MyChart({ data }) {
+import moment from 'moment';  
+function MyChart({ data, week }) {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -13,7 +13,7 @@ function MyChart({ data }) {
       }
 
       // labels
-      const labels = Object.keys(data.daily);
+    const labels = getWeekDates(week);
 
       // data
       const chartData = labels.map((dateStr) => {
@@ -48,7 +48,13 @@ function MyChart({ data }) {
       });
     }
   }, [data, chartRef]);
-
+  const getWeekDates = (week) => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      dates.push(moment().year(week.split('-')[0]).week(week.split('-')[1]).startOf('week').add(i, 'days').format('YYYY-MM-DD'));
+    }
+    return dates;
+  };
   return <canvas ref={chartRef} />;
 }
 

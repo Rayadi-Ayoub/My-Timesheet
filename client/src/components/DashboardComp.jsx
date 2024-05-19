@@ -8,17 +8,22 @@ import {
 } from "react-icons/hi";
 import { RxPinTop } from "react-icons/rx";
 import MyChart from "../pages/MyChart";
+import Select from 'react-select';
+import moment from 'moment';
+
 function DashboardComp() {
   const [users, setUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [totalTimeDifferenceByMonth, setTotalTimeDifferenceByMonth] =
+  const [totalTimeDifferenceByWeek, setTotalTimeDifferenceByWeek] =
     useState(0);
   const [monthly, setmonthly] = useState({ monthly: 0, weekly: 0, daily: 0 });
   const [totalSocietes, setTotalSocietes] = useState(0);
   const [societeLastMonth, setSocietelastMonth] = useState(0);
   const [usersLastMonth, setUsersLastMonth] = useState([]);
-
   const [mostSelectedSociete, setMostSelectedSociete] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [weeks, setWeeks] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -29,6 +34,18 @@ function DashboardComp() {
       fetchmostSelectedSociete();
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    const newWeeks = Array.from({ length: 53 }, (_, i) => {
+      const startOfWeek = moment().year(selectedYear).week(i + 1).startOf('week').format('YYYY-MM-DD');
+      const endOfWeek = moment().year(selectedYear).week(i + 1).endOf('week').format('YYYY-MM-DD');
+      return {
+        value: `${selectedYear}-${i + 1}`,
+        label: `Week ${i + 1} (${startOfWeek} - ${endOfWeek})`
+      };
+    });
+    setWeeks(newWeeks);
+  }, [selectedYear]);
 
   const fetchUsers = async () => {
     try {
@@ -67,19 +84,26 @@ function DashboardComp() {
       console.log(error.message);
     }
   };
-  const fetchmypointing = async () => {
+  const fetchmypointing = async (selectedWeek) => {
+    setSelectedWeek(selectedWeek.value);
     try {
-        const res = await fetch(`/api/pointings/user/${currentUser?._id}`,{method: 'POST',body:{"week":"2024-20"}})
+        const res = await fetch(`/api/pointings/user/${currentUser?._id}`,{method: 'POST',headers: {
+          'Content-Type': 'application/json',
+        },body:JSON.stringify({week:selectedWeek.value})})
       const data = await res.json();
-      console.log("rqq",data)
       if (res.ok) {
-        setTotalTimeDifferenceByMonth(data.totalTimeDifferenceByMonth);
+        setTotalTimeDifferenceByWeek(data.totalTimeDifferenceByWeek);
         setmonthly(data.monthly);
       }
     } catch (error) {
       console.log(error.message);
     }
   };
+  const handleYearChange = (selectedYear) => {
+    setSelectedYear(selectedYear.value);
+  };
+
+  const years = Array.from({ length: 5 }, (_, i) => ({ value: moment().year() - i, label: `${moment().year() - i}` }));
   return (
     <div className="p-3 md:mx-auto ">
       <div className="flex-wrap flex gap-4 justify-center ">
@@ -143,9 +167,9 @@ function DashboardComp() {
                 Number of hours worked
               </h3>
               <p className="text-2xl ">
-                {totalTimeDifferenceByMonth &&
-                  totalTimeDifferenceByMonth.monthly &&
-                  totalTimeDifferenceByMonth.monthly[
+                {totalTimeDifferenceByWeek &&
+                  totalTimeDifferenceByWeek.monthly&&
+                  totalTimeDifferenceByWeek.monthly[
                     new Date().toISOString().slice(0, 7)
                   ]}
                 <span className="p-2">Hours</span>
@@ -156,9 +180,9 @@ function DashboardComp() {
           <div className="flex gap-2 text-sm">
             <span className="text-green-500 flex items-center ">
               <HiArrowNarrowUp />
-              {totalTimeDifferenceByMonth &&
-                totalTimeDifferenceByMonth.monthly &&
-                totalTimeDifferenceByMonth.monthly[
+              {totalTimeDifferenceByWeek &&
+                totalTimeDifferenceByWeek.monthly &&
+                totalTimeDifferenceByWeek.monthly[
                   new Date().toISOString().slice(0, 7)
                 ]}{" "}
             </span>
@@ -168,12 +192,13 @@ function DashboardComp() {
       <div className=" flex p-3">
         <div className=" flex flex-col p-5 dark:bg-slate-800 gap-4 md:w-100 w-full rounded-md shadow-md">
           <h3 className=" flex text-gray-500 text-md uppercase justify-center">
-            CHART FOR NUMBER OF HOURS WORKED
+            NUMBER OF HOURS WORKED
           </h3>
-
+          <Select options={weeks} onChange={fetchmypointing} />
+          <Select options={years} onChange={handleYearChange} />
           <div className="flex justify-between">
-            {totalTimeDifferenceByMonth && (
-              <MyChart data={totalTimeDifferenceByMonth} />
+            {totalTimeDifferenceByWeek && (
+              <MyChart data={totalTimeDifferenceByWeek} week={selectedWeek}/>
             )}
           </div>
         </div>

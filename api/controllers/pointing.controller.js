@@ -105,6 +105,7 @@ export const getAllPointings = async (req, res) => {
 export const getPointingsByUserId = async (req, res) => {
   const userId = req.params.userId;
   const week = req.body.week;
+  console.log(week)
   const pointings = await Pointing.find({ createdBy: userId });
 
   const filteredPointings = pointings.filter(pointing => {
@@ -113,29 +114,29 @@ export const getPointingsByUserId = async (req, res) => {
   });
 
   const totalTimeDifferenceByWeek = filteredPointings.reduce((acc, pointing) => {
-  //const month = moment(pointing.createdAt).format('YYYY-MM');
-    //const week = moment(pointing.createdAt).format('YYYY-ww');
+    const month = moment(pointing.createdAt).format('YYYY-MM');
+    const week = moment(pointing.createdAt).format('YYYY-ww');
     const day = moment(pointing.createdAt).format('YYYY-MM-DD');
     const timeDifference = moment(pointing.timeEnd, 'HH:mm').diff(moment(pointing.timeStart, 'HH:mm'), 'hours');
 
-    //if (!acc.monthly[month]) {
-      //acc.monthly[month] = 0;
-    //}
-    //if (!acc.weekly[week]) {
-      //acc.weekly[week] = 0;
-    //}
+    if (!acc.monthly[month]) {
+      acc.monthly[month] = 0;
+    }
+    if (!acc.weekly[week]) {
+      acc.weekly[week] = 0;
+    }
     if (!acc.daily[day]) {
       acc.daily[day] = 0;
     }
 
-    //acc.monthly[month] += timeDifference;
-    //acc.weekly[week] += timeDifference;
+    acc.monthly[month] += timeDifference;
+    acc.weekly[week] += timeDifference;
     acc.daily[day] += timeDifference;
 
     return acc;
   }, { 
-    //monthly: {},
-   //weekly: {},
+    monthly: {},
+    weekly: {},
     daily: {} });
 
     res.json({ pointings: filteredPointings, totalTimeDifferenceByWeek });

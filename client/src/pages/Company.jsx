@@ -7,22 +7,23 @@ import {
   Alert,
   Table,
 } from "flowbite-react";
-import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { IoMdAdd } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 
 function Company() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({});
-  const [errorMessage, seterrorMessage] = useState(null);
+  const [updateFormData, setUpdateFormData] = useState({});
+  const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [poles, setPoles] = useState([]);
   const [selectedPole, setSelectedPole] = useState("");
   const [societes, setSocietes] = useState([]);
   const [showModeld, setShowModeld] = useState(false);
   const [societeId, setSocieteId] = useState(null);
-
-
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedPoleToUpdate, setSelectedPoleToUpdate] = useState(null);
 
   useEffect(() => {
     fetchPoles();
@@ -34,6 +35,7 @@ function Company() {
     const data = await response.json();
     setPoles(data);
   };
+
   const fetchSociete = async () => {
     try {
       const res = await fetch(`/api/societes`);
@@ -55,6 +57,14 @@ function Company() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
+  const handleUpdateChange = (e) => {
+    setUpdateFormData({
+      ...updateFormData,
+      [e.target.id]: e.target.value.trim(),
+    });
+  };
+
   const handleSelectChange = (e) => {
     setSelectedPole(e.target.value);
   };
@@ -63,12 +73,12 @@ function Company() {
     e.preventDefault();
 
     if (!formData.noms || !selectedPole) {
-      return seterrorMessage("Please fill out all fields.");
+      return setErrorMessage("Please fill out all fields.");
     }
 
     try {
       setLoading(true);
-      seterrorMessage(null);
+      setErrorMessage(null);
       const res = await fetch(`/api/addSociete/${selectedPole}`, {
         method: "POST",
         headers: {
@@ -79,12 +89,46 @@ function Company() {
 
       const data = await res.json();
       if (data.success === false) {
-        seterrorMessage(data.message);
+        setErrorMessage(data.message);
+      } else {
+        fetchSociete();
+        setShowModal(false);
       }
-      setLoading(false);
-      setShowModal(false);
     } catch (error) {
-      seterrorMessage(error.message);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!updateFormData.noms || !selectedPoleToUpdate) {
+      return setErrorMessage("Please fill out all fields.");
+    }
+
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await fetch(`/api/updateSociete/${selectedPoleToUpdate}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateFormData),
+      });
+
+      const data = await res.json();
+      if (data.success === false) {
+        setErrorMessage(data.message);
+      } else {
+        fetchSociete();
+        setShowUpdateModal(false);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -96,16 +140,21 @@ function Company() {
       });
       const data = await res.json();
       if (data.success === false) {
-        seterrorMessage(data.message);
+        setErrorMessage(data.message);
+      } else {
+        setShowModeld(false);
+        fetchSociete();
       }
-      setShowModeld(false);
-      fetchSociete();
+    } catch (error) {
+      setErrorMessage(error.message);
     }
-    catch (error) {
-      seterrorMessage(error.message);
-    }
-  }
+  };
 
+  const handleUpdateClick = (pole) => {
+    setSelectedPoleToUpdate(pole._id);
+    setUpdateFormData({ noms: pole.noms });
+    setShowUpdateModal(true);
+  };
 
   return (
     <div className="w-full p-4">
@@ -138,11 +187,16 @@ function Company() {
                     onClick={() => {
                       setShowModeld(true);
                       setSocieteId(societe._id);
-                    
                     }}
-                    className="font-medium text-red-500 hover:underline cursor-pointer"
+                    className="font-medium text-red-500 hover:underline cursor-pointer p-3"
                   >
                     Delete
+                  </span>
+                  <span
+                    onClick={() => handleUpdateClick(societe)}
+                    className="font-medium text-blue-500 hover:underline cursor-pointer p-3"
+                  >
+                    Update
                   </span>
                 </Table.Cell>
               </Table.Row>
@@ -219,7 +273,10 @@ function Company() {
               Are you sure you want to delete this Societe ?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeleteSociete}>
+              <Button
+                color="failure"
+                onClick={() => handleDeleteSociete(societeId)}
+              >
                 Yes, I'm sure
               </Button>
               <Button color="gray" onClick={() => setShowModeld(false)}>
@@ -227,6 +284,47 @@ function Company() {
               </Button>
             </div>
           </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={showUpdateModal}
+        onClose={() => setShowUpdateModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <form onSubmit={handleUpdateSubmit}>
+            <div className="text-center">
+              <IoIosAddCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+              <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+                Update Company
+              </h3>
+              <TextInput
+                className=" mt-3 "
+                type="text"
+                id="noms"
+                placeholder="Nom société"
+                onChange={handleUpdateChange}
+                value={updateFormData.noms || ""}
+              />
+              <div className="flex justify-center gap-4 pt-10 ">
+                <Button color="success" type="submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Spinner size="sm" />
+                      <span className="pl-3">Loading...</span>
+                    </>
+                  ) : (
+                    " Update Company"
+                  )}
+                </Button>
+                <Button color="gray" onClick={() => setShowUpdateModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </form>
         </Modal.Body>
       </Modal>
 

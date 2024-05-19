@@ -3,6 +3,7 @@ import Societe from '../models/societe.model.js';
 
 
 
+
 export const addPole = async (req, res) => {
   console.log(req.file); 
 
@@ -141,22 +142,43 @@ export const getAllPoles = async (req, res) => {
 };
 
 
+
+
+
 export const updatePole = async (req, res) => {
-  const { NomP, location } = req.body;
+  const { id } = req.params;
+  const { NomP, location, imagepole, societes } = req.body;
 
   try {
-    const updatedPole = await Pole.findByIdAndUpdate(
-      req.params.id,
-      { NomP, location, imagepole: req.file ? req.file.path : "" },
-      { new: true }
-    );
+    const updatedPole = await Pole.findByIdAndUpdate(id, { NomP, location, imagepole, societes }, { new: true });
 
     if (!updatedPole) {
       return res.status(404).json({ message: 'No pole found with this id' });
     }
 
-    res.status(200).json(updatedPole);
+    return res.status(200).json(updatedPole);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while updating the pole' });
+  }
+};
+
+
+
+export const updateSociete = async (req, res) => {
+  const { id } = req.params;
+  const { noms } = req.body;
+
+  try {
+    const updatedSociete = await Societe.findByIdAndUpdate(id, { noms }, { new: true });
+
+    if (!updatedSociete) {
+      return res.status(404).json({ message: 'No societe found with this id' });
+    }
+
+    return res.status(200).json(updatedSociete);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while updating the societe' });
   }
 };

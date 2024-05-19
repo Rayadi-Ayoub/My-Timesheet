@@ -7,7 +7,8 @@ import {
   getSocietesByPole,
   getAllSocietes,
   getAllPoles,
-  updatePole
+  updatePole,
+  updateSociete
 } from "../controllers/pole.controller.js";
 
 const router = express.Router();
@@ -21,7 +22,9 @@ router.delete("/deleteSociete/:societeId", deleteSociete);
 router.get("/societes", getAllSocietes);
 router.get("/getSocietesByPole/:poleId", getSocietesByPole);
 router.get("/poles", getAllPoles);
-router.put("/updatePole/:poleId", updatePole);
+router.put('/updatePole/:id', updatePole);
+router.put('/updateSociete/:id', updateSociete);
+
 
 
 export default router;

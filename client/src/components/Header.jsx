@@ -37,18 +37,11 @@ function Header() {
           className="self-centre whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
         >
           <div className="flex h-10 w-15 ">
-          <img src="image.png" alt="" />
-         
-          
-          {/* <span className="px-2 py-1 bg-gradient-to-r from-indigo-500  via-purple-500 to-pink-500 rounded-lg text-white">
-            Geiser
-            
-          </span> */}
-         
-          Timesheet
+            <img src="image.png" alt="" />
+            <span className="px-2 py-1   dark:text-white ">Timesheet</span>
           </div>
         </Link>
-        
+
         <form>
           <TextInput
             type="text"
@@ -80,7 +73,7 @@ function Header() {
               <Dropdown.Header>
                 <span className="block text-sm">@{currentUser.username}</span>
                 <span className="block text-sm font-medium truncate">
-                  @{currentUser.email}
+                  {currentUser.email}
                 </span>
               </Dropdown.Header>
               <Link to={"/dashboard?tab=profile"}>

@@ -9,43 +9,55 @@ import {
 } from "flowbite-react";
 import { IoMdAdd } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
-
-import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 function Pole() {
   const [showModal, setShowModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [formData, setFormData] = useState({});
-  const [errorMessage, seterrorMessage] = useState(null);
+  const [updateFormData, setUpdateFormData] = useState({});
+  const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [poles, setPoles] = useState([]);
   const [poleIdToDelete, setPoleIdToDelete] = useState(null);
+  const [poleIdToUpdate, setPoleIdToUpdate] = useState(null);
   const [showModeld, setShowModeld] = useState(false);
 
-
   useEffect(() => {
-    const fetchPoles = async () => {
-      const response = await fetch(`/api/poles`);
-      const data = await response.json();
-      setPoles(data);
-    };
-
     fetchPoles();
   }, []);
 
+  const fetchPoles = async () => {
+    try {
+      const response = await fetch(`/api/poles`);
+      const data = await response.json();
+      setPoles(data);
+    } catch (error) {
+      setErrorMessage("Failed to fetch poles");
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+  };
+
+  const handleUpdateChange = (e) => {
+    setUpdateFormData({
+      ...updateFormData,
+      [e.target.id]: e.target.value.trim(),
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.NomP || !formData.location) {
-      return seterrorMessage("Please fill out all fields.");
+      return setErrorMessage("Please fill out all fields.");
     }
 
     try {
       setLoading(true);
-      seterrorMessage(null);
+      setErrorMessage(null);
       const res = await fetch("/api/Addpole", {
         method: "POST",
         headers: {
@@ -56,18 +68,55 @@ function Pole() {
 
       const data = await res.json();
       if (data.success === false) {
-        seterrorMessage(data.message);
+        setErrorMessage(data.message);
+      } else {
+        fetchPoles();
+        setShowModal(false);
       }
-      setLoading(false);
-      setShowModal(false);
     } catch (error) {
-      seterrorMessage(error.message);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!updateFormData.NomP || !updateFormData.location) {
+      return setErrorMessage("Please fill out all fields.");
+    }
+
+    if (!poleIdToUpdate) {
+      return setErrorMessage("Pole ID is required.");
+    }
+
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await fetch(`/api/updatePole/${poleIdToUpdate}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateFormData),
+      });
+
+      const data = await res.json();
+      if (data.success === false) {
+        setErrorMessage(data.message);
+      } else {
+        fetchPoles();
+        setShowUpdateModal(false);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleDeletePole = async () => {
-
     try {
       const res = await fetch(`/api/Deletepole/${poleIdToDelete}`, {
         method: "DELETE",
@@ -75,30 +124,24 @@ function Pole() {
 
       const data = await res.json();
       if (data.success === false) {
-        seterrorMessage(data.message);
+        setErrorMessage(data.message);
+      } else {
+        fetchPoles();
+        setShowModeld(false);
       }
-      setShowModeld(false);
-      fetchPoles();
+    } catch (error) {
+      setErrorMessage(error.message);
     }
-    catch (error) {
-      seterrorMessage(error.message);
-    }
-  }
-  const updatePole = async (poleId, updatedPole) => {
-    const response = await fetch(`/api/updatePole/${poleId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedPole),
+  };
+
+  const handleUpdateClick = (pole) => {
+    setPoleIdToUpdate(pole._id);
+    setUpdateFormData({
+      NomP: pole.NomP,
+      location: pole.location,
+      imagepole: pole.imagepole,
     });
-  
-    if (!response.ok) {
-      throw new Error('HTTP status ' + response.status);
-    }
-  
-    const data = await response.json();
-    return data;
+    setShowUpdateModal(true);
   };
 
   return (
@@ -133,11 +176,10 @@ function Pole() {
                   <img
                     src={pole.imagepole}
                     alt={pole.NomP}
-                    className="w-10 h-10 object-cover bg-gray-500  rounded-full"
+                    className="w-10 h-10 object-cover bg-gray-500 rounded-full"
                   />
                 </Table.Cell>
                 <Table.Cell>{pole.NomP}</Table.Cell>
-
                 <Table.Cell>{pole.location}</Table.Cell>
                 <Table.Cell>
                   <span
@@ -150,13 +192,10 @@ function Pole() {
                     Delete
                   </span>
                   <span
-                    onClick={() => {
-                      setShowModal(true);
-                      setPoleIdToDelete(pole._id);
-                    }}
+                    onClick={() => handleUpdateClick(pole)}
                     className="font-medium text-blue-500 hover:underline cursor-pointer p-3"
                   >
-                    Update 
+                    Update
                   </span>
                 </Table.Cell>
               </Table.Row>
@@ -180,7 +219,7 @@ function Pole() {
                 Are you sure you want to Add this Pole?
               </h3>
               <TextInput
-                className="p-1 "
+                className="p-1"
                 type="text"
                 id="NomP"
                 placeholder="Nom Pole"
@@ -188,14 +227,14 @@ function Pole() {
               />
 
               <TextInput
-                className="p-1 "
+                className="p-1"
                 type="text"
                 id="location"
                 placeholder="location"
                 onChange={handleChange}
               />
 
-              <div className="flex justify-center gap-4 pt-10 ">
+              <div className="flex justify-center gap-4 pt-10">
                 <Button color="success" type="submit" disabled={loading}>
                   {loading ? (
                     <>
@@ -203,7 +242,7 @@ function Pole() {
                       <span className="pl-3">Loading...</span>
                     </>
                   ) : (
-                    " Add Pole"
+                    "Add Pole"
                   )}
                 </Button>
                 <Button color="gray" onClick={() => setShowModal(false)}>
@@ -214,6 +253,59 @@ function Pole() {
           </form>
         </Modal.Body>
       </Modal>
+
+      <Modal
+        show={showUpdateModal}
+        onClose={() => setShowUpdateModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <form onSubmit={handleUpdateSubmit}>
+            <div className="text-center">
+              <IoIosAddCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+              <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+                Are you sure you want to update this Pole?
+              </h3>
+              <TextInput
+                className="p-1"
+                type="text"
+                id="NomP"
+                placeholder="Nom Pole"
+                value={updateFormData.NomP || ""}
+                onChange={handleUpdateChange}
+              />
+
+              <TextInput
+                className="p-1"
+                type="text"
+                id="location"
+                placeholder="location"
+                value={updateFormData.location || ""}
+                onChange={handleUpdateChange}
+              />
+
+              <div className="flex justify-center gap-4 pt-10">
+                <Button color="success" type="submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Spinner size="sm" />
+                      <span className="pl-3">Loading...</span>
+                    </>
+                  ) : (
+                    "Update Pole"
+                  )}
+                </Button>
+                <Button color="gray" onClick={() => setShowUpdateModal(false)}>
+                  No, cancel
+                </Button>
+              </div>
+            </div>
+          </form>
+        </Modal.Body>
+      </Modal>
+
       <Modal
         show={showModeld}
         onClose={() => setShowModeld(false)}
@@ -238,8 +330,6 @@ function Pole() {
           </div>
         </Modal.Body>
       </Modal>
-      
-      
 
       {errorMessage && (
         <Alert className="mt-5" color="failure">

@@ -1,6 +1,9 @@
 import { Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx"; // Import XLSX dependency for Excel export
+import MyChart from "../pages/MyChart";
+import Select from 'react-select';
+import moment from 'moment';
 
 function Pagination({ page, totalPages, setPage }) {
   const generatePages = () => {
@@ -69,10 +72,72 @@ export default function Reporting() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [pointings, setPointings] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [weeks, setWeeks] = useState([]);
+  const [totalTimeDifferenceByWeek, setTotalTimeDifferenceByWeek] = useState(0);
+  const [monthly, setmonthly] = useState({ monthly: 0, weekly: 0, daily: 0 });
+  const [selectedDep, setSelectedDep] = useState(null);
+  const [dep, setDep] = useState();
+  useEffect(() => {
+    const fetchDep = async () => {
+      try {
+        const res = await fetch('/api/user/getDepartements');
+        const data = await res.json();
+        console.log(data);
+        if (res.ok) {
+          const formattedDeps = data.departementList.map(dep => ({
+            value: dep,
+            label: dep
+          }));
+          setDep(formattedDeps);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchDep();
+  }, []);
+  useEffect(() => {
+    const newWeeks = Array.from({ length: 53 }, (_, i) => {
+      const startOfWeek = moment().year(selectedYear).week(i + 1).startOf('week').format('YYYY-MM-DD');
+      const endOfWeek = moment().year(selectedYear).week(i + 1).endOf('week').format('YYYY-MM-DD');
+      return {
+        value: `${selectedYear}-${i + 1}`,
+        label: `Week ${i + 1} (${startOfWeek} - ${endOfWeek})`
+      };
+    });
+    setWeeks(newWeeks);
+  }, [selectedYear]);
+
+  const fetchmypointing = async (selectedWeek) => {
+    setSelectedWeek(selectedWeek.value);
+    try {
+        const res = await fetch(`/api/pointings/user/${currentUser?._id}`,{method: 'POST',headers: {
+          'Content-Type': 'application/json',
+        },body:JSON.stringify({week:selectedWeek.value})})
+      const data = await res.json();
+      if (res.ok) {
+        setTotalTimeDifferenceByWeek(data.totalTimeDifferenceByWeek);
+        setmonthly(data.monthly);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const handleYearChange = (selectedYear) => {
+    setSelectedYear(selectedYear.value);
+  };
+  const handleDepChange = (selectedDep) => {
+    setSelectedDep(selectedDep.value);
+  };
+  const years = Array.from({ length: 5 }, (_, i) => ({ value: moment().year() - i, label: `${moment().year() - i}` }));
+  
 
   useEffect(() => {
     fetchallpointings();
   }, [page]);
+
 
   const fetchallpointings = async () => {
     const response = await fetch(`/api/getpointings?page=${page}&limit=10`);
@@ -142,6 +207,22 @@ export default function Reporting() {
         >
           Export to Excel
         </button>
+      </div>
+      <div className=" flex p-3">
+        <div className=" flex flex-col p-5 dark:bg-slate-800 gap-4 md:w-100 w-full rounded-md shadow-md">
+          <h3 className=" flex text-gray-500 text-md uppercase justify-center">
+            NUMBER OF HOURS WORKED
+          </h3>
+          <Select options={dep} onChange={handleDepChange} />
+          <Select options={years} onChange={handleYearChange} />
+          { selectedDep && <Select options={weeks} onChange={fetchmypointing} />}
+      
+          <div className="flex justify-between">
+            {totalTimeDifferenceByWeek && (
+              <MyChart data={totalTimeDifferenceByWeek} week={selectedWeek}/>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

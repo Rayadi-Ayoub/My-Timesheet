@@ -149,3 +149,30 @@ export const grantAccess = (action, resource) => {
         }
     }
 }
+
+
+export const getDepartementsFromUsers = async (req, res, next) => {
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 8;
+    const sortDirection = req.query.sort === 'asc' ? 1 : -1;
+
+    const users = await User.find()
+      .sort({ createdAt: sortDirection })
+      .skip(startIndex)
+      .limit(limit);
+    const departementList = [];
+    users.forEach(element => {
+      if (!departementList.includes(element?.departement)) {
+        departementList.push(element?.departement);
+      }
+    });
+
+  res.status(200).json({
+    departementList
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+} 

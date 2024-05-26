@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
-import { Datepicker } from "flowbite-react";
 
 export default function Register() {
   const [formData, setFormData] = useState({});
@@ -9,7 +8,6 @@ export default function Register() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
@@ -163,7 +161,11 @@ export default function Register() {
       </div>
       <form onSubmit={handleSubmit}>
         <div className=" flex   gap-4 justify-center p-4 ">
-          <Button gradientDuoTone="purpleToPink" type="submit" disabled={loading}>
+          <Button
+            gradientDuoTone="purpleToPink"
+            type="submit"
+            disabled={loading}
+          >
             {loading ? (
               <>
                 <Spinner size="sm" />

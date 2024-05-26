@@ -262,7 +262,18 @@ export const requestPasswordReset = async (req, res, next) => {
       from: 'ayoub.riadhii@gmail.com',
       to: email,
       subject: 'Password Reset OTP',
-      text: `Your OTP for password reset is: ${otp}`,
+      html: `
+        <div style="background-color: #f4f4f4; padding: 20px; font-family: Arial, sans-serif;">
+          <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <h2 style="color: #333;">Password Reset Request</h2>
+            <p>Dear ${user.username},</p>
+            <p>You have requested to reset your password. Use the OTP below to reset your password:</p>
+            <p style="font-size: 24px; font-weight: bold; color: #333;">${otp}</p>
+            <p>This OTP is valid for 10 minutes.</p>
+            <p>Best regards,<br>Geiser Team</p>
+          </div>
+        </div>
+      `,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

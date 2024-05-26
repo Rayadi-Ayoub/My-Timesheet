@@ -6,7 +6,9 @@ import registerRoutes from "./routes/register.route.js";
 import poleRoutes from "./routes/pole.route.js";
 import tacheRoutes from "./routes/tache.route.js";
 import pointingRoutes from "./routes/pointing.route.js";
-import projectRoutes from "./routes/project.route.js"
+import projectRoutes from "./routes/project.route.js";
+import { requestPasswordReset, resetPassword ,verifyOtp } from './controllers/user.controller.js';
+
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -42,7 +44,10 @@ app.use("/api/register", registerRoutes);
 app.use("/api", poleRoutes);
 app.use("/api",tacheRoutes);
 app.use("/api",pointingRoutes);
-app.use("/api/projet",projectRoutes)
+app.use('/api', projectRoutes);
+app.use('/api/request-password-reset', requestPasswordReset);
+app.use('/api/reset-password', resetPassword);
+app.use('/api/verify-otp',verifyOtp)
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

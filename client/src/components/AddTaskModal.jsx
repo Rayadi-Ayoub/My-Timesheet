@@ -16,6 +16,7 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [taskStage, setTaskStage] = useState("todo");
+  const [tache, setTache] = useState(""); // New state for tache
 
   useEffect(() => {
     fetchPoles();
@@ -29,35 +30,27 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
 
   const colorStyles = {
     control: (styles) => ({ ...styles, backgroundColor: "white" }),
-    option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-      return { ...styles, color: data.color };
-    },
-    multiValue: (styles, { data }) => {
-      return {
-        ...styles,
-        backgroundColor: data.color,
-        color: "#fff",
-      };
-    },
-    multiValueLabel: (styles, { data }) => {
-      return {
-        ...styles,
-        color: "#101010",
-      };
-    },
-    multiValueRemove: (styles, { data }) => {
-      return {
-        ...styles,
-        color: "#b30000",
-        cursor: "pointer",
-        ":hover": {
-          color: "#ff3333",
-        },
-      };
-    },
+    option: (styles, { data }) => ({ ...styles, color: data.color }),
+    multiValue: (styles, { data }) => ({
+      ...styles,
+      backgroundColor: data.color,
+      color: "#fff",
+    }),
+    multiValueLabel: (styles, { data }) => ({
+      ...styles,
+      color: "#101010",
+    }),
+    multiValueRemove: (styles, { data }) => ({
+      ...styles,
+      color: "#b30000",
+      cursor: "pointer",
+      ":hover": {
+        color: "#ff3333",
+      },
+    }),
   };
 
-  const handleUserSelect = (selectedOptions, actionMeta) => {
+  const handleUserSelect = (selectedOptions) => {
     const selectedUserIds = selectedOptions.map((option) => option.value);
     setSelectedUsers(selectedUserIds);
   };
@@ -72,7 +65,7 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
       pole: selectedPole,
       societe_concernes: [selectedSociete],
       createdAt: new Date().toISOString(),
-      taches: [],
+      tache: tache,
       employee: selectedUsers,
       stage: taskStage,
     };
@@ -80,6 +73,10 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
     createTask(taskData);
     setShowModal(false);
     toast.success("Project created successfully!");
+    resetForm();
+  };
+
+  const resetForm = () => {
     setTaskName("");
     setTaskDescription("");
     setStartDate("");
@@ -89,6 +86,7 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
     setSelectedSociete("");
     setSelectedUsers([]);
     setTaskStage("todo");
+    setTache("");
   };
 
   const fetchPoles = async () => {
@@ -116,7 +114,7 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
     }
   };
 
-  const handleChange = (e) => {
+  const handlePoleChange = (e) => {
     const poleId = e.target.value;
     setSelectedPole(poleId);
     if (poleId) {
@@ -224,13 +222,13 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
             <select
               id="pole"
               value={selectedPole}
-              onChange={handleChange}
+              onChange={handlePoleChange}
               className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Please select a pole</option>
               {Array.isArray(poles) &&
-                poles.map((pole, index) => (
-                  <option key={index} value={pole._id}>
+                poles.map((pole) => (
+                  <option key={pole._id} value={pole._id}>
                     {pole.NomP}
                   </option>
                 ))}
@@ -252,8 +250,8 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
               >
                 <option value="">Please select a Company</option>
                 {Array.isArray(societes) &&
-                  societes.map((societe, index) => (
-                    <option key={index} value={societe._id}>
+                  societes.map((societe) => (
+                    <option key={societe._id} value={societe._id}>
                       {societe.noms}
                     </option>
                   ))}
@@ -273,6 +271,22 @@ const AddTaskModal = ({ showModal, setShowModal, createTask }) => {
               placeholder="Budget"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
+              required
+              className="mt-1 block w-full"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="tache"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Task
+            </label>
+            <Textarea
+              id="tache"
+              placeholder="Task"
+              value={tache}
+              onChange={(e) => setTache(e.target.value)}
               required
               className="mt-1 block w-full"
             />

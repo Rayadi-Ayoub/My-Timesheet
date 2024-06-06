@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, Button } from "flowbite-react";
 import clsx from "clsx";
+import { getUserProfilePicture } from "../utils/profilePicture.utils";
 
 const TASK_TYPE = {
   "in progress": "bg-yellow-500",
@@ -46,7 +47,7 @@ function ListView({ projects, onDelete, onUpdate }) {
                   {project.employee.map((emp) => (
                     <img
                       key={emp._id}
-                      src={emp.profilePicture || "default_image_url.jpg"} // Replace with a default image URL if needed
+                      src={getUserProfilePicture(emp.profilePicture)}
                       alt={emp.username}
                       className="w-8 h-8 rounded-full mr-2"
                     />

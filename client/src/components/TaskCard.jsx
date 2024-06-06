@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React from "react";
 import { Menu } from "@headlessui/react";
-import { DotsVerticalIcon } from "@heroicons/react/solid"; // You can also use react-icons if you prefer
+import { DotsVerticalIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
+import { getUserProfilePicture } from "../utils/profilePicture.utils";
 
 const FormatDate = (date) => {
   return new Date(date).toLocaleDateString();
 };
 
-const TaskCard = ({ task = {}, onDelete, onUpdate }) => {
+const TASK_TYPE = {
+  todo: "To Do",
+  "in progress": "In Progress",
+  completed: "Completed",
+};
+
+const TaskCard = ({
+  task = {},
+  onDelete,
+  onUpdate,
+  onUpdateStage,
+  projectId,
+}) => {
   const {
     _id,
-    nomPr,
-    description,
-    date_debut,
-    date_fin,
-    budget,
-    pole,
+    nomPr = "",
+    description = "",
+    date_debut = "",
+    date_fin = "",
+    budget = 0,
+    pole = {},
     societe_concernes = [],
     employee = [],
+    tache = "",
     stage = "todo", // Default to "todo" if stage is undefined
   } = task;
 
-  console.log("Rendering TaskCard with data:", task);
-  console.log("Task stage:", stage);
+  const handleStageChange = (e) => {
+    const newStage = e.target.value;
+    console.log("Project ID:", projectId);
+    console.log("Task ID:", _id);
+    onUpdateStage(projectId, _id, newStage); // Ensure projectId and _id are correctly passed
+  };
 
   return (
     <div className="w-full h-fit bg-white dark:bg-gray-800 shadow-md p-4 rounded mt-4">
@@ -91,23 +109,49 @@ const TaskCard = ({ task = {}, onDelete, onUpdate }) => {
         Budget: {budget}
       </p>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        Pole: {pole?.NomP}
+        Pole: {pole?.NomP || ""}
       </p>
       <p className="text-sm text-gray-600 dark:text-gray-400">
         Societe: {societe_concernes.map((s) => s.noms).join(", ")}
       </p>
-
+      <p className="text-sm text-gray-600 dark:text-gray-400">Task: {tache}</p>
+      <div className="mt-4">
+        <label
+          htmlFor={`taskStage-${_id}`}
+          className="block text-sm font-medium text-gray-700"
+        >
+          Task Stage
+        </label>
+        <select
+          id={`taskStage-${_id}`}
+          value={stage}
+          onChange={handleStageChange}
+          className="mt-1 block w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
+        >
+          {Object.keys(TASK_TYPE).map((key) => (
+            <option key={key} value={key}>
+              {TASK_TYPE[key]}
+            </option>
+          ))}
+        </select>
+      </div>
       <span className="text-blue-500 dark:text-blue-300 uppercase mt-4 block">
         Users Concerned With Project:
       </span>
       <div className="flex flex-wrap items-center mt-2">
         {employee.map((emp) => (
           <div key={emp._id} className="flex items-center mr-4 mb-2">
-            <img
-              className="w-10 h-10 rounded-full mr-2"
-              src={emp.profilePicture}
-              alt={`Profile of ${emp.username}`}
-            />
+            {emp.profilePicture ? (
+              <img
+                className="w-10 h-10 rounded-full mr-2"
+                src={getUserProfilePicture(emp.profilePicture)}
+                alt={`Profile of ${emp.username}`}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full mr-2 bg-gray-300 flex items-center justify-center text-white">
+                {emp.username}
+              </div>
+            )}
             <div className="text-sm">
               <p className="text-gray-900 dark:text-white leading-none">
                 {emp.username}

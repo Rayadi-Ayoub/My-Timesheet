@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.bg-blue-600 {
+  background-color: #1e3a8a;
+}
+.bg-yellow-600 {
+  background-color: #d97706;
+}
+.bg-green-600 {
+  background-color: #16a34a;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -126,4 +137,6 @@
     box-shadow: 0 0 0 0 rgba(178, 212, 252, 0.7);
   }
 }
+
+
 

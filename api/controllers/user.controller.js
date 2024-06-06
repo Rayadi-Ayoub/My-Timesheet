@@ -1,10 +1,8 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/user.model.js';
-import { roles } from './role.controller.js';
 import otpGenerator from 'otp-generator';
 import nodemailer from 'nodemailer';
-
 
 const otpStorage = {};
 
@@ -13,7 +11,7 @@ export const test = (req, res) => {
 };
 
 export const updateUser = async (req, res, next) => {
-  if (req.user.id !== req.params.userId) {
+  if (req.user.id !== req.params.userId && req.user.poste !== "admin") {
     return next(errorHandler(403, 'You are not allowed to update this user'));
   }
   if (req.body.password) {
@@ -24,9 +22,7 @@ export const updateUser = async (req, res, next) => {
   }
   if (req.body.username) {
     if (req.body.username.length < 5 || req.body.username.length > 20) {
-      return next(
-        errorHandler(400, 'Username must be between 7 and 20 characters')
-      );
+      return next(errorHandler(400, 'Username must be between 5 and 20 characters'));
     }
     if (req.body.username.includes(' ')) {
       return next(errorHandler(400, 'Username cannot contain spaces'));
@@ -34,25 +30,12 @@ export const updateUser = async (req, res, next) => {
     if (req.body.username !== req.body.username.toLowerCase()) {
       return next(errorHandler(400, 'Username must be lowercase'));
     }
-    if (!req.body.username.match(/^[a-zA-Z0-9]+$/)) {
-      return next(
-        errorHandler(400, 'Username can only contain letters and numbers')
-      );
+    if (!/^[a-zA-Z0-9]+$/.test(req.body.username)) {
+      return next(errorHandler(400, 'Username can only contain letters and numbers'));
     }
   }
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.userId,
-      {
-        $set: {
-          username: req.body.username,
-          email: req.body.email,
-          password: req.body.password,
-          profilePicture: req.body.profilePicture,
-        },
-      },
-      { new: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(req.params.userId, { $set: req.body }, { new: true });
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);
   } catch (error) {
@@ -61,10 +44,9 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const deleteUser = async (req, res, next) => {
-  if (!req.user.isAdmin && req.user.id !== req.params.userId) {
+  if (req.user.poste !== "admin" && req.user.id !== req.params.userId) {
     return next(errorHandler(403, 'You are not allowed to delete this user'));
   }
-
   try {
     await User.findByIdAndDelete(req.params.userId);
     res.status(200).json({ message: 'User has been deleted' });
@@ -74,35 +56,23 @@ export const deleteUser = async (req, res, next) => {
 };
 
 export const getUsers = async (req, res, next) => {
-  if (!req.user.isAdmin) {
-    return next(errorHandler(403, 'You are not allowed to see all users'));
-  }
+
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 8;
     const sortDirection = req.query.sort === 'asc' ? 1 : -1;
 
-    const users = await User.find()
-      .sort({ createdAt: sortDirection })
-      .skip(startIndex)
-      .limit(limit);
-
-    const userWithoutPassword = users.map((user) => {
+    const users = await User.find().sort({ createdAt: sortDirection }).skip(startIndex).limit(limit);
+    const userWithoutPassword = users.map(user => {
       const { password, ...rest } = user._doc;
       return rest;
     });
     const totalUsers = await User.countDocuments();
-    const now = new Date();
 
-    const oneMonthAgo = new Date(
-      now.getFullYear(),
-      now.getMonth() - 1,
-      now.getDate()
-    );
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
-    const usersLastMonth = await User.countDocuments({
-      createdAt: { $gte: oneMonthAgo }
-    });
+    const usersLastMonth = await User.countDocuments({ createdAt: { $gte: oneMonthAgo } });
 
     res.status(200).json({
       userWithoutPassword,
@@ -122,33 +92,14 @@ export const signout = (req, res, next) => {
   }
 };
 
-export const uploadProfileImage = async (req, res) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    req.body.userId,
-    {
-      $set: {
-        profilePicture: req.file.path,
-      },
-    }
-  );
-  const { password, ...rest } = updatedUser._doc;
-  res.status(200).json(rest);
-};
-
-export const grantAccess = (action, resource) => {
-  return async (req, res, next) => {
-    try {
-      const permission = roles.can(req.user.poste)[action](resource);
-      if (!permission.granted) {
-        return res.status(401).json({
-          error: "You don't have enough permission to perform this action",
-        });
-      }
-      next();
-    } catch (error) {
-      res.send('Error' + error);
-    }
-  };
+export const uploadProfileImage = async (req, res, next) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(req.body.userId, { $set: { profilePicture: req.file.path } }, { new: true });
+    const { password, ...rest } = updatedUser._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getDepartementsFromUsers = async (req, res, next) => {
@@ -157,87 +108,14 @@ export const getDepartementsFromUsers = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 8;
     const sortDirection = req.query.sort === 'asc' ? 1 : -1;
 
-    const users = await User.find()
-      .sort({ createdAt: sortDirection })
-      .skip(startIndex)
-      .limit(limit);
-    const departementList = [];
-    users.forEach((element) => {
-      if (!departementList.includes(element?.departement)) {
-        departementList.push(element?.departement);
-      }
-    });
+    const users = await User.find().sort({ createdAt: sortDirection }).skip(startIndex).limit(limit);
+    const departementList = [...new Set(users.map(user => user.departement))];
 
-    res.status(200).json({
-      departementList,
-    });
+    res.status(200).json({ departementList });
   } catch (error) {
     next(error);
   }
 };
-
-// export const requestPasswordReset = async (req, res, next) => {
-//   const { email } = req.body;
-//   try {
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return next(errorHandler(404, 'User not found'));
-//     }
-
-//     const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
-//     otpStorage[email] = otp;
-
-//     const transporter = nodemailer.createTransport({
-//       service: 'Gmail',
-//       auth: {
-//         user: 'ayoub.riadhii@gmail.com',
-//         pass: 'gaaw yevc ijcm bvis',
-//       },
-//     });
-
-//     const mailOptions = {
-//       from: 'ayoub.riadhii@gmail.com',
-//       to: email,
-//       subject: 'Password Reset OTP',
-//       text: `Your OTP for password reset is: ${otp}`,
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info) => {
-//       if (error) {
-//         console.log(error);
-//         return res.status(500).json({ error: 'Failed to send email' });
-//       } else {
-//         console.log('Message sent: %s', info.messageId);
-//         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-//         return res.status(200).json({ message: 'Email sent successfully' });
-//       }
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const verifyOtp = async (req, res, next) => {
-//   const { email, otp } = req.body;
-//   if (otpStorage[email] !== otp) {
-//     return next(errorHandler(400, 'Invalid OTP'));
-//   }
-//   res.status(200).json({ message: 'OTP verified' });
-// };
-
-// export const resetPassword = async (req, res, next) => {
-//   const { email, newPassword } = req.body;
-//   try {
-//     const hashPassword = bcryptjs.hashSync(newPassword, 10);
-//     await User.findOneAndUpdate({ email }, { password: hashPassword });
-//     delete otpStorage[email]; // Remove OTP after successful reset
-
-//     res.status(200).json({ message: 'Password reset successful' });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 
 export const requestPasswordReset = async (req, res, next) => {
   const { email } = req.body;
@@ -251,15 +129,20 @@ export const requestPasswordReset = async (req, res, next) => {
     otpStorage[email] = otp;
 
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
       auth: {
-        user: 'ayoub.riadhii@gmail.com',
-       pass: 'gaaw yevc ijcm bvis',
+        user: "75869a001@smtp-brevo.com",
+          pass: "45SrGhZUJQXHma92",
+      },
+      tls: {
+        rejectUnauthorized: true,
       },
     });
 
     const mailOptions = {
-      from: 'ayoub.riadhii@gmail.com',
+      from: 'rayadiayoub7@gmail.com',
       to: email,
       subject: 'Password Reset OTP',
       html: `
@@ -305,7 +188,7 @@ export const resetPassword = async (req, res, next) => {
   try {
     const hashPassword = bcryptjs.hashSync(newPassword, 10);
     await User.findOneAndUpdate({ email }, { password: hashPassword });
-    delete otpStorage[email]; // Remove OTP after successful reset
+    delete otpStorage[email]; 
 
     res.status(200).json({ message: 'Password reset successful' });
   } catch (error) {

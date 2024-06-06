@@ -4,6 +4,7 @@ import { verifyToken } from "../utils/verifyUser.js";
 
 
 
+
 const router = Express.Router();
 
 router.post('/register', verifyToken, register);

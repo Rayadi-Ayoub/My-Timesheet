@@ -23,7 +23,8 @@ export default function Register() {
       !formData.phone ||
       !formData.email ||
       !formData.password ||
-      !formData.employeeCost
+      !formData.employeeCost ||
+      !formData.billingcost === ""
     ) {
       return setErrorMessage("Please fill out all fields.");
     }
@@ -51,35 +52,48 @@ export default function Register() {
   };
 
   return (
-    <div className="main-h-screen mt-20">
-      <div className="grid grid-cols-2 gap-5 max-w-3xl mx-auto">
-        <div>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 dark:bg-gray-900">
+      <div className="max-w-4xl w-full space-y-8 bg-white dark:bg-gray-800 p-10 shadow-md rounded-lg">
+        <h2 className="text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+          Register
+        </h2>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-8">
             <div>
-              <Label value="Username" />
+              <Label
+                htmlFor="username"
+                value="Username"
+                className="dark:text-white"
+              />
               <TextInput
                 type="text"
                 placeholder="Username"
                 id="username"
                 onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <Label value="Matricule" />
+              <Label
+                htmlFor="matricule"
+                value="Matricule"
+                className="dark:text-white"
+              />
               <TextInput
                 type="text"
                 placeholder="Matricule"
                 id="matricule"
                 onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <Label value="Poste" />
+              <Label
+                htmlFor="poste"
+                value="Poste"
+                className="dark:text-white"
+              />
               <select
                 id="poste"
                 value={formData.poste}
                 onChange={handleChange}
-                className="block w-full p-2 mb-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="block w-full p-2 mt-1 text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Choose a poste</option>
                 <option value="admin">ADMIN</option>
@@ -87,101 +101,134 @@ export default function Register() {
                 <option value="user">USER</option>
                 <option value="controller">CONTROLEUR</option>
               </select>
-            </div>
-            <div>
-              <Label value="Departement" />
+              <Label
+                htmlFor="departement"
+                value="Departement"
+                className="dark:text-white"
+              />
               <select
                 id="departement"
                 value={formData.departement}
                 onChange={handleChange}
-                className="block w-full p-2 mb-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="block w-full p-2 mt-1 text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Choose a departement</option>
                 <option value="Generale">Générale</option>
                 <option value="Financiere">Financiere</option>
                 <option value="Informatique">Informatique</option>
                 <option value="Juridique">Juridique</option>
+                <option value="Securite">Securite</option>
               </select>
-            </div>
-            <div>
-              <Label value="Employee Cost" />
+              <Label
+                htmlFor="employeeCost"
+                value="Employee Cost"
+                className="dark:text-white"
+              />
               <TextInput
                 type="text"
                 placeholder="Employee Cost"
                 id="employeeCost"
                 onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
+              />
+              <Label
+                htmlFor="billingcost"
+                value="Billing Cost"
+                className="dark:text-white"
+              />
+              <TextInput
+                type="text"
+                placeholder="Billing Cost"
+                id="billingcost"
+                onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
               />
             </div>
-          </form>
-        </div>
-        <div>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
-              <Label value="Hiring Date" />
-              <TextInput id="hiringDate" type="date" onChange={handleChange} />
-            </div>
-            <div>
-              <Label value="Address" />
+              <Label
+                htmlFor="hiringDate"
+                value="Hiring Date"
+                className="dark:text-white"
+              />
+              <TextInput
+                id="hiringDate"
+                type="date"
+                onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
+              />
+              <Label
+                htmlFor="address"
+                value="Address"
+                className="dark:text-white"
+              />
               <TextInput
                 type="text"
                 placeholder="Address"
                 id="address"
                 onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <Label value="Phone" />
+              <Label
+                htmlFor="phone"
+                value="Phone"
+                className="dark:text-white"
+              />
               <TextInput
                 type="text"
                 placeholder="Phone"
                 id="phone"
                 onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <Label value="Email" />
+              <Label
+                htmlFor="email"
+                value="Email"
+                className="dark:text-white"
+              />
               <TextInput
                 type="email"
                 placeholder="name@company.com"
                 id="email"
                 onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <Label value="Password" />
+              <Label
+                htmlFor="password"
+                value="Password"
+                className="dark:text-white"
+              />
               <TextInput
                 type="password"
                 placeholder="Password"
                 id="password"
                 onChange={handleChange}
+                className="mt-1 dark:bg-gray-700 dark:text-white"
               />
             </div>
-          </form>
-        </div>
+          </div>
+          <div className="flex justify-center">
+            <Button
+              gradientDuoTone="purpleToPink"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="pl-3">Loading...</span>
+                </>
+              ) : (
+                "Sign Up"
+              )}
+            </Button>
+          </div>
+        </form>
+        {errorMessage && (
+          <Alert className="mt-5" color="failure">
+            {errorMessage}
+          </Alert>
+        )}
       </div>
-      <form onSubmit={handleSubmit}>
-        <div className=" flex   gap-4 justify-center p-4 ">
-          <Button
-            gradientDuoTone="purpleToPink"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Spinner size="sm" />
-                <span className="pl-3">Loading...</span>
-              </>
-            ) : (
-              "Sign Up"
-            )}
-          </Button>
-        </div>
-      </form>
-      {errorMessage && (
-        <Alert className="mt-5" color="failure">
-          {errorMessage}
-        </Alert>
-      )}
     </div>
   );
 }

@@ -18,15 +18,17 @@ const ProjectSchema = new mongoose.Schema(
         budget: {
             type: Number,
         },
-        stage: {  // Ensure this field matches the frontend
+        stage: {
             type: String,
-            default: "todo",  // Set a default value
+            default: "todo",
         },
         pole: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Pole",
         },
-        taches: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tache" }],
+        tache: {
+            type: String,
+        },
         employee: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
         creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },

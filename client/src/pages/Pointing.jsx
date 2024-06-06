@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Spinner, Button, Alert , Label, Textarea } from "flowbite-react";
+import { Spinner, Button, Alert, Label, Textarea, Card } from "flowbite-react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   addPointingsStart,
@@ -12,9 +12,11 @@ function Pointing() {
   const [poles, setPoles] = useState([]);
   const [selectedPole, setSelectedPole] = useState("");
   const [societes, setSocietes] = useState([]);
+  const [selectedSociete, setSelectedSociete] = useState("");
   const [typeTaches, setTypeTaches] = useState([]);
   const [taches, setTaches] = useState([]);
   const [selectedTypeTache, setSelectedTypeTache] = useState("");
+  const [selectedTache, setSelectedTache] = useState("");
   const [timeStart, setTimeStart] = useState("");
   const [timeEnd, setTimeEnd] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,7 @@ function Pointing() {
     useState("");
   const [addPointingsErrorMessage, setAddPointingsErrorMessage] = useState("");
   const dispatch = useDispatch();
+
   useEffect(() => {
     fetchPoles();
     fetchTypeTaches();
@@ -31,7 +34,6 @@ function Pointing() {
   const fetchPoles = async () => {
     const response = await fetch(`/api/poles`);
     const data = await response.json();
-
     setPoles(data);
   };
 
@@ -40,11 +42,13 @@ function Pointing() {
     const data = await response.json();
     setSocietes(data);
   };
+
   const fetchTypeTaches = async () => {
     const response = await fetch("/api/getAllTypeTaches");
     const data = await response.json();
     setTypeTaches(data);
   };
+
   const fetchTaches = async (typeTacheId) => {
     const response = await fetch(`/api/getTypeTaches/${typeTacheId}`);
     const data = await response.json();
@@ -61,6 +65,10 @@ function Pointing() {
     }
   };
 
+  const handleSocieteChange = (event) => {
+    setSelectedSociete(event.target.value);
+  };
+
   const handleTypeTacheChange = (event) => {
     const selectedTypeTache = event.target.value;
     setSelectedTypeTache(selectedTypeTache);
@@ -71,7 +79,13 @@ function Pointing() {
     }
   };
 
+  const handleTacheChange = (event) => {
+    setSelectedTache(event.target.value);
+  };
+
   const handleTimeStartChange = (event) => {
+    console.log(event.target.value);
+    // setTimeStart(event.target.value + ":00");
     setTimeStart(event.target.value);
   };
 
@@ -86,20 +100,20 @@ function Pointing() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!societes.length || !taches.length) {
+    if (!selectedSociete || !selectedTache) {
       console.log("Societes or Taches is empty");
       return;
     }
 
     const pointingData = {
       pole: selectedPole,
-      societe: societes[0]._id,
+      societe: selectedSociete,
       typeTache: selectedTypeTache,
-      tache: taches[0]._id,
+      tache: selectedTache,
       timeStart,
       timeEnd,
       comment,
-      createdBy: currentUser._id, 
+      createdBy: currentUser._id,
     };
 
     dispatch(addPointingsStart());
@@ -119,6 +133,7 @@ function Pointing() {
         dispatch(addPointingsSuccess(data));
         setLoading(false);
         setAddPointingsSuccessMessage("Pointing added successfully");
+        resetForm();
       } else {
         const errorData = await response.json();
         dispatch(addPointingsFailure(errorData));
@@ -126,128 +141,177 @@ function Pointing() {
       }
     } catch (error) {
       dispatch(addPointingsFailure(error.message));
-      setAddPointingsError(error.message);
+      setAddPointingsErrorMessage(error.message);
       setLoading(false);
     }
   };
 
-  return (
-    <div className="max-w-lg mx-auto  p-3 w-full ">
-      <h1 className="my-7 text-center font-semibold text-3xl ">
-        Add Your Pointing
-      </h1>
+  const resetForm = () => {
+    setSelectedPole("");
+    setSelectedSociete("");
+    setSelectedTypeTache("");
+    setSelectedTache("");
+    setTimeStart("");
+    setTimeEnd("");
+    setComment("");
+  };
 
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col space-y-2">
-          <label
-            htmlFor="timeStart"
-            className="text-sm font-bold text-gray-700 dark:text-gray-200"
+  const generateOptions = (count) => {
+    return Array.from({ length: count }, (_, i) => (
+      <option key={i} value={i.toString().padStart(2, "0")}>
+        {i.toString().padStart(2, "0")}
+      </option>
+    ));
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-3 w-full ">
+      <Card className="p-6 dark:bg-gray-800">
+        <h1 className="my-7 text-center font-semibold text-3xl text-gray-900 dark:text-gray-100">
+          Add Your Pointing
+        </h1>
+        <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="timeStart"
+                className="text-sm font-bold text-gray-700 dark:text-gray-200"
+              >
+                Time Start
+              </label>
+              {/* <select
+                id="timeStart"
+                name="timeStart"
+                value={timeStart}
+                onChange={handleTimeStartChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option value="" disabled>
+                  HH
+                </option>
+                {generateOptions(24)}
+              </select> */}
+              <input
+                type="time"
+                id="timeStart"
+                name="timeStart"
+                value={timeStart}
+                onChange={handleTimeStartChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              />
+              <label
+                htmlFor="timeEnd"
+                className="text-sm font-bold text-gray-700 dark:text-gray-200"
+              >
+                Time End
+              </label>
+              <input
+                type="time"
+                id="timeEnd"
+                name="timeEnd"
+                value={timeEnd}
+                onChange={handleTimeEndChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              />
+            </div>
+          </div>
+          <select
+            value={selectedPole}
+            onChange={handleChange}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
-            Time Start
-          </label>
-          <input
-            type="time"
-            id="timeStart"
-            name="timeStart"
-            onChange={handleTimeStartChange}
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          />
-          <label
-            htmlFor="timeEnd"
-            className="text-sm font-bold text-gray-700 dark:text-gray-200"
-          >
-            Time End
-          </label>
-          <input
-            type="time"
-            id="timeEnd"
-            name="timeEnd"
-            onChange={handleTimeEndChange}
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          />
-        </div>
-        <select
-          value={selectedPole}
-          onChange={handleChange}
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        >
-          <option value="">Please select a pole</option>
-          {poles.map((pole, index) => (
-            <option key={index} value={pole._id}>
-              {pole.NomP}
-            </option>
-          ))}
-        </select>
-        {selectedPole && (
-          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            <option value="">Please select a Company</option>
-            {societes.map((societe, index) => (
-              <option key={index} value={societe._id}>
-                {societe.noms}
+            <option value="">Please select a pole</option>
+            {poles.map((pole, index) => (
+              <option key={index} value={pole._id}>
+                {pole.NomP}
               </option>
             ))}
           </select>
-        )}
-        <select
-          value={selectedTypeTache}
-          onChange={handleTypeTacheChange}
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        >
-          <option value="">Please select a TypeTache</option>
-          {typeTaches.map((typeTache, index) => (
-            <option key={index} value={typeTache._id}>
-              {typeTache.typetache}{" "}
-            </option>
-          ))}
-        </select>
-        {selectedTypeTache && (
-          <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            <option value="">Please select a Tache</option>
-            {taches.map((tache, index) => (
-              <option key={index} value={tache._id}>
-                {tache.nomtache}
-              </option>
-            ))}
-          </select>
-        )}
-        <div className="max-w-md">
-      <div className="mb-2 block">
-        <Label htmlFor="comment" value="Your comment" />
-      </div>
-      <Textarea id="comment" placeholder="Leave a comment..." required rows={4} 
-      onChange={handleCommentChange}/>
-    </div>
-        <Button
-          type="submit"
-          gradientDuoTone="purpleToBlue"
-          disabled={loading}
-          outline
-        >
-          {loading ? (
-            <>
-              <Spinner size="sm" />
-              <span className="pl-3">Loading...</span>
-            </>
-          ) : (
-            " Add Pointing"
+          {selectedPole && (
+            <select
+              value={selectedSociete}
+              onChange={handleSocieteChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="">Please select a Company</option>
+              {societes.map((societe, index) => (
+                <option key={index} value={societe._id}>
+                  {societe.noms}
+                </option>
+              ))}
+            </select>
           )}
-        </Button>
-        {addPointingsSuccessMessage && (
-          <Alert color="success" className="mt-5">
-            {addPointingsSuccessMessage}
-          </Alert>
-        )}
-        {addPointingsErrorMessage && (
-          <Alert color="failure" className="mt-5">
-            {addPointingsErrorMessage}
-          </Alert>
-        )}
-        {error && (
-          <Alert color="success" className="mt-5">
-            {error}
-          </Alert>
-        )}
-      </form>
+          <select
+            value={selectedTypeTache}
+            onChange={handleTypeTacheChange}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="">Please select a TypeTache</option>
+            {typeTaches.map((typeTache, index) => (
+              <option key={index} value={typeTache._id}>
+                {typeTache.typetache}
+              </option>
+            ))}
+          </select>
+          {selectedTypeTache && (
+            <select
+              value={selectedTache}
+              onChange={handleTacheChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="">Please select a Tache</option>
+              {taches.map((tache, index) => (
+                <option key={index} value={tache._id}>
+                  {tache.nomtache}
+                </option>
+              ))}
+            </select>
+          )}
+          <div className="max-w-md">
+            <div className="mb-2 block">
+              <Label htmlFor="comment" value="Your comment" />
+            </div>
+            <Textarea
+              id="comment"
+              placeholder="Leave a comment..."
+              required
+              rows={4}
+              value={comment}
+              onChange={handleCommentChange}
+            />
+          </div>
+          <Button
+            type="submit"
+            gradientDuoTone="purpleToBlue"
+            disabled={loading}
+            outline
+          >
+            {loading ? (
+              <>
+                <Spinner size="sm" />
+                <span className="pl-3">Loading...</span>
+              </>
+            ) : (
+              "Add Pointing"
+            )}
+          </Button>
+          {addPointingsSuccessMessage && (
+            <Alert color="success" className="mt-5">
+              {addPointingsSuccessMessage}
+            </Alert>
+          )}
+          {addPointingsErrorMessage && (
+            <Alert color="failure" className="mt-5">
+              {addPointingsErrorMessage}
+            </Alert>
+          )}
+          {error && (
+            <Alert color="success" className="mt-5">
+              {error}
+            </Alert>
+          )}
+        </form>
+      </Card>
     </div>
   );
 }

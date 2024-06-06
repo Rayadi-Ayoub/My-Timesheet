@@ -139,7 +139,6 @@ function Pole() {
     setUpdateFormData({
       NomP: pole.NomP,
       location: pole.location,
-      imagepole: pole.imagepole,
     });
     setShowUpdateModal(true);
   };
@@ -161,7 +160,6 @@ function Pole() {
         <Table hoverable className="shadow-md">
           <Table.Head>
             <Table.HeadCell>Date created</Table.HeadCell>
-            <Table.HeadCell>Pole Image</Table.HeadCell>
             <Table.HeadCell>Pole Name</Table.HeadCell>
             <Table.HeadCell>Location</Table.HeadCell>
             <Table.HeadCell>Action</Table.HeadCell>
@@ -172,13 +170,7 @@ function Pole() {
                 <Table.Cell>
                   {new Date(pole.createdAt).toLocaleDateString()}
                 </Table.Cell>
-                <Table.Cell>
-                  <img
-                    src={pole.imagepole}
-                    alt={pole.NomP}
-                    className="w-10 h-10 object-cover bg-gray-500 rounded-full"
-                  />
-                </Table.Cell>
+
                 <Table.Cell>{pole.NomP}</Table.Cell>
                 <Table.Cell>{pole.location}</Table.Cell>
                 <Table.Cell>

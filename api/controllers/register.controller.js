@@ -16,6 +16,7 @@ export const register = async (req, res, next) => {
     email,
     password,
     employeeCost,
+    billingcost
   } = req.body;
 
   const existingUser = await User.findOne({ matricule });
@@ -43,14 +44,15 @@ export const register = async (req, res, next) => {
     phone === "" ||
     email === "" ||
     password === "" ||
-    employeeCost === ""
+    employeeCost === "" || 
+    billingcost === ""
   ) {
     return next(errorHandler(400, "Please provide all required fields"));
   }
 
   const hashPassword = bcryptjs.hashSync(password, 10);
 
-  if (!req.user || !req.user.isAdmin) {
+  if (!req.user || !req.user.poste === "admin" ) {
     return next(errorHandler(403, "You are not allowed to register a user"));
   }
 
@@ -64,6 +66,7 @@ export const register = async (req, res, next) => {
     phone,
     email,
     employeeCost,
+    billingcost,
     password: hashPassword,
   });
 
@@ -73,15 +76,20 @@ export const register = async (req, res, next) => {
     // Send email if the user is an admin
     if (poste === 'admin') {
       const transporter = nodemailer.createTransport({
-        service: 'Gmail',
+        host: 'smtp-relay.brevo.com',
+        port: 587, // Use 587 for TLS
+        secure: false, 
         auth: {
-          user: 'ayoub.riadhii@gmail.com',
-       pass: 'gaaw yevc ijcm bvis',
+          user: '75869a001@smtp-brevo.com',
+          pass: '45SrGhZUJQXHma92', // Your app-specific password
+        },
+        tls: {
+          rejectUnauthorized: false, // Allow self-signed certificates
         },
       });
 
       const mailOptions = {
-        from: 'ayoub.riadhii@gmail.com',
+        from: 'rayadiayoub7@gmail.com',
         to: email,
         subject: 'Welcome to Geiser!',
         html: `
@@ -91,17 +99,22 @@ export const register = async (req, res, next) => {
               <p>Welcome to Geiser! We're excited to have you on board.</p>
               <p>Your email is <strong>${email}</strong>, and your password is <strong>${password}</strong>.</p>
               <p>Please use these credentials to log in to the timesheet system.</p>
-              <p>Best regards,<br>[Rayadi Ayoub]</p>
+              <p>Best regards,<br>Geiser Team</p>
             </div>
           </div>
         `,
       };
 
+      console.log('Sending email...');
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log(error);
+          console.error('Error sending email:', error);
+          console.error('Error code:', error.code);
+          console.error('Response:', error.response);
+          console.error('Response code:', error.responseCode);
+          console.error('Command:', error.command);
         } else {
-          console.log('Email sent: ' + info.response);
+          console.log('Email sent successfully:', info.response);
         }
       });
     }
@@ -130,7 +143,7 @@ export const signin = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { id: validUser._id, isAdmin: validUser.isAdmin, poste: validUser.poste },
+      { id: validUser._id, poste: validUser.poste === "admin"  , poste: validUser.poste },
       process.env.JWT_SECRET
     );
     const { password: pass, ...rest } = validUser._doc;

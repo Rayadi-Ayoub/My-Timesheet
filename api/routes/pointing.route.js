@@ -1,14 +1,20 @@
 import express from "express";
+import { verifyToken } from "../utils/verifyUser.js";
 import {
   createPointing,
   updatePointing,
   deletePointing,
   getPointingsByUserId,
   getAllPointings,
-  getMostSelectedSociete
+  getMostSelectedSociete,
+  getNewChartData,
+  getWeeklyHoursBySociete,
+  getUsers,
+ 
 } from "../controllers/pointing.controller.js";
 
-import { verifyToken } from "../utils/verifyUser.js";
+
+
 
 const router = express.Router();
 
@@ -18,6 +24,9 @@ router.delete("/pointings/:id", verifyToken, deletePointing);
 router.get("/getpointings", verifyToken, getAllPointings);
 router.post('/pointings/user/:userId', getPointingsByUserId);
 router.get('/most-selected-societe',verifyToken, getMostSelectedSociete);
+router.post('/pointings/newchartdata', getNewChartData);
+router.post('/pointings/weeklyhoursbysociete', getWeeklyHoursBySociete);
+router.get('/users', getUsers);
 
 
 export default router;

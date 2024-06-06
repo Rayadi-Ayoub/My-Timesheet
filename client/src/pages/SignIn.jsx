@@ -17,6 +17,7 @@ import {
 import ForgetPasswordModal from "./ForgetPasswordModal";
 import VerifyOTP from "./VerifyOTP";
 import ChangePassword from "./ChangePassword";
+import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline"; // Import icons from Heroicons or any other icon library
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -27,6 +28,7 @@ export default function SignIn() {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -55,7 +57,7 @@ export default function SignIn() {
 
       if (res.ok) {
         dispatch(signInSuccess(data));
-        navigate("/dashboard?tab=pointing");
+        navigate("/dashboard/pointing");
       }
     } catch (error) {
       dispatch(signInFailure(error.message));
@@ -107,12 +109,26 @@ export default function SignIn() {
             </div>
             <div>
               <Label value="Password" />
-              <TextInput
-                type="password"
-                placeholder="************"
-                id="password"
-                onChange={handleChange}
-              />
+              <div className="relative">
+                <TextInput
+                  type={showPassword ? "text" : "password"}
+                  placeholder="************"
+                  id="password"
+                  onChange={handleChange}
+                  className="pr-1"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOffIcon className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+              </div>
             </div>
             <Button
               gradientDuoTone="purpleToPink"

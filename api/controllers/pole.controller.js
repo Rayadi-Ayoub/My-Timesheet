@@ -5,7 +5,7 @@ import Societe from '../models/societe.model.js';
 
 
 export const addPole = async (req, res) => {
-  console.log(req.file); 
+ 
 
   const { NomP, location } = req.body;
 
@@ -13,7 +13,7 @@ export const addPole = async (req, res) => {
     const newPole = new Pole({
       NomP,
       location,
-      imagepole: req.file ? req.file.path : "" 
+     
     });
 
     await newPole.save();
@@ -147,10 +147,10 @@ export const getAllPoles = async (req, res) => {
 
 export const updatePole = async (req, res) => {
   const { id } = req.params;
-  const { NomP, location, imagepole, societes } = req.body;
+  const { NomP, location, societes } = req.body;
 
   try {
-    const updatedPole = await Pole.findByIdAndUpdate(id, { NomP, location, imagepole, societes }, { new: true });
+    const updatedPole = await Pole.findByIdAndUpdate(id, { NomP, location,  societes }, { new: true });
 
     if (!updatedPole) {
       return res.status(404).json({ message: 'No pole found with this id' });

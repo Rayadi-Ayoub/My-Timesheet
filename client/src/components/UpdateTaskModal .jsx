@@ -14,6 +14,7 @@ const UpdateTaskModal = ({ showModal, setShowModal, updateTask, taskData }) => {
   const [poles, setPoles] = useState([]);
   const [selectedPole, setSelectedPole] = useState(taskData.pole || "");
   const [societes, setSocietes] = useState([]);
+  const [tache, setTache] = useState(taskData.tache || "");
   const [selectedSociete, setSelectedSociete] = useState(
     taskData.societe_concernes ? taskData.societe_concernes[0] : ""
   );
@@ -78,7 +79,7 @@ const UpdateTaskModal = ({ showModal, setShowModal, updateTask, taskData }) => {
       budget: budget,
       pole: selectedPole,
       societe_concernes: [selectedSociete],
-      taches: [],
+      tache: tache,
       employee: selectedUsers,
       stage: taskStage,
     };
@@ -265,6 +266,24 @@ const UpdateTaskModal = ({ showModal, setShowModal, updateTask, taskData }) => {
               placeholder="Budget"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
+              required
+              min={0}
+              className="mt-1 block w-full"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="tache"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Tache
+            </label>
+            <Textarea
+              id="tache"
+              type="text"
+              placeholder="Task Description"
+              value={tache}
+              onChange={(e) => setTache(e.target.value)}
               required
               className="mt-1 block w-full"
             />

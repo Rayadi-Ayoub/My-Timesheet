@@ -14,6 +14,7 @@ import {
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { getUserProfilePicture } from "../utils/profilePicture.utils";
 
 export default function DashProfile() {
   const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -206,7 +207,9 @@ export default function DashProfile() {
             />
           )}
           <img
-            src={imageFileUrl || currentUser.profilePicture}
+            src={
+              imageFileUrl || getUserProfilePicture(currentUser.profilePicture)
+            }
             alt="user"
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
               imageFileUploading && "opacity-60"
@@ -244,14 +247,14 @@ export default function DashProfile() {
         >
           {loading ? "Loading..." : "Update"}
         </Button>
-        {currentUser.isAdmin && (
-          <Link to={"/create-post"}>
+        {currentUser.poste === "admin" && (
+          <Link to={"/register"}>
             <Button
               type="button"
               gradientDuoTone="purpleToPink"
               className="w-full"
             >
-              Create a post
+              Create a new user
             </Button>
           </Link>
         )}

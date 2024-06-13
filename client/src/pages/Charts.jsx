@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Tabs } from "flowbite-react";
+import { HiAdjustments, HiClipboardList } from "react-icons/hi";
 import Select from "react-select";
 import moment from "moment";
 import MyChart1 from "../pages/pointingByDep";
 import MyNewChart from "../pages/MyNewChart";
+
 export default function Charts() {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [selectedWeek, setSelectedWeek] = useState(null);
@@ -15,7 +18,6 @@ export default function Charts() {
   const [labels, setLabels] = useState([]);
   const [selectKey, setSelectKey] = useState(0);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [selectedYear2, setSelectedYear2] = useState(moment().year());
   const [newChartData, setNewChartData] = useState([]);
   const [startDate, setStartDate] = useState(new Date("2024-01-01"));
   const [endDate, setEndDate] = useState(new Date());
@@ -152,48 +154,42 @@ export default function Charts() {
   }));
 
   return (
-    <div className="p-3 md:mx-auto ">
-      <div className="flex p-3">
-        <div className="flex flex-col p-5 dark:bg-slate-800 gap-4 md:w-100 w-full rounded-md shadow-md">
-          <h3 className="flex text-gray-500 text-md uppercase justify-center">
-            NUMBER OF HOURS WORKED by DEPARTMENT
-          </h3>
-          <Select options={dep} onChange={handleDepChange} />
-          <Select options={years} onChange={handleYearChange} />
-          {selectedDep && (
-            <Select
-              key={selectKey}
-              options={weeks}
-              onChange={fetchMyPointing}
-              value={weeks.find((week) => week.value === selectedWeek)}
-              placeholder="Select a week"
-            />
-          )}
-          <div className="flex justify-between">
+    <div className="p-3   md:mx-auto">
+      <Tabs aria-label="Tabs with icons" style="underline">
+        <Tabs.Item title="Hours by Department" icon={HiClipboardList}>
+          <div className="flex flex-col p-5 dark:bg-slate-800 gap-4 w-full max-w-3xl mx-auto rounded-md shadow-md">
+            <h3 className="text-gray-500 text-md uppercase text-center">
+              NUMBER OF HOURS WORKED BY DEPARTMENT
+            </h3>
+            <Select options={dep} onChange={handleDepChange} />
+            <Select options={years} onChange={handleYearChange} />
+            {selectedDep && (
+              <Select
+                key={selectKey}
+                options={weeks}
+                onChange={fetchMyPointing}
+                value={weeks.find((week) => week.value === selectedWeek)}
+                placeholder="Select a week"
+              />
+            )}
             {monthly && (
               <div>
-                {monthly && (
-                  <MyChart1
-                    data={monthly}
-                    week={selectedWeek}
-                    labels={labels}
-                  />
-                )}
+                <MyChart1 data={monthly} week={selectedWeek} labels={labels} />
               </div>
             )}
           </div>
-        </div>
-      </div>
-      <div className="flex p-3">
-        <div className="flex flex-col p-5 dark:bg-slate-800 gap-4 md:w-100 w-full rounded-md shadow-md">
-          <h3 className="flex text-gray-500 text-md uppercase justify-center">
-            USER WORK HOURS AND TASK PRICE PER COST
-          </h3>
-          <div>
-            <MyNewChart data={newChartData} />
+        </Tabs.Item>
+        <Tabs.Item title="User Work Hours" icon={HiAdjustments}>
+          <div className="flex flex-col p-5 dark:bg-slate-800 gap-4 w-full max-w-3xl mx-auto rounded-md shadow-md">
+            <h3 className="text-gray-500 text-md uppercase text-center">
+              USER WORK HOURS AND TASK PRICE PER COST
+            </h3>
+            <div>
+              <MyNewChart data={newChartData} />
+            </div>
           </div>
-        </div>
-      </div>
+        </Tabs.Item>
+      </Tabs>
     </div>
   );
 }

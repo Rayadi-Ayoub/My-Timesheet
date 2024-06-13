@@ -25,6 +25,9 @@ function Company() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedPoleToUpdate, setSelectedPoleToUpdate] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchPoles();
     fetchSociete();
@@ -156,6 +159,10 @@ function Company() {
     setShowUpdateModal(true);
   };
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const currentSocietes = societes.slice(0, indexOfLastItem);
+
   return (
     <div className="w-full p-4">
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -175,7 +182,7 @@ function Company() {
             <Table.HeadCell>Societe Name</Table.HeadCell>
             <Table.HeadCell>Action</Table.HeadCell>
           </Table.Head>
-          {societes.map((societe) => (
+          {currentSocietes.map((societe) => (
             <Table.Body className="divide-y" key={societe._id}>
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell>
@@ -203,6 +210,17 @@ function Company() {
             </Table.Body>
           ))}
         </Table>
+        {societes.length > indexOfLastItem && (
+          <div className="flex justify-center mt-4">
+            <Button
+              outline
+              gradientDuoTone="purpleToPink"
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Show More
+            </Button>
+          </div>
+        )}
       </div>
       <Modal
         show={showModal}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
+import { Tabs } from "flowbite-react";
 
 function TimeSheetTable() {
   const [users, setUsers] = useState([]);
@@ -60,7 +61,7 @@ function TimeSheetTable() {
     }
   };
 
-  const renderTable = () => {
+  const renderTable = (dataKey, label) => {
     const weeks = Object.keys(weeklyData);
     const societeNames = new Set();
 
@@ -80,240 +81,65 @@ function TimeSheetTable() {
       return (
         <th
           key={week}
-          className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300"
+          className="border border-gray-300 p-2 bg-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
         >
           {startOfWeek} - {endOfWeek}
           <br />
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            semaine {week.split("-")[1]}
+            Week {week.split("-")[1]}
           </span>
         </th>
       );
     });
 
-    const renderHoursTable = () => {
-      const rows = Array.from(societeNames).map((societeName) => (
-        <tr
-          key={societeName}
-          className="hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <td className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300">
-            {societeName}
+    const rows = Array.from(societeNames).map((societeName) => (
+      <tr
+        key={societeName}
+        className="hover:bg-gray-100 dark:hover:bg-gray-600"
+      >
+        <td className="border border-gray-300 p-2 dark:border-gray-600 dark:text-gray-300">
+          {societeName}
+        </td>
+        {weeks.map((week) => (
+          <td
+            key={week + societeName}
+            className="border border-gray-300 p-2 dark:border-gray-600 dark:text-gray-300"
+          >
+            {(weeklyData[week][societeName]?.[dataKey] || 0).toFixed(2)}
           </td>
-          {weeks.map((week) => (
-            <td
-              key={week + societeName}
-              className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300"
-            >
-              {(weeklyData[week][societeName]?.hours || 0).toFixed(2)} hrs
-            </td>
-          ))}
-        </tr>
-      ));
-
-      return (
-        <>
-          <h3 className="text-lg font-semibold mb-2 dark:text-gray-300">
-            Heures
-          </h3>
-          <table className="min-w-full border border-gray-300 dark:border-gray-700">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 p-2 dark:border-gray-700">
-                  Societe
-                </th>
-                {headers}
-              </tr>
-            </thead>
-            <tbody>{rows}</tbody>
-          </table>
-        </>
-      );
-    };
-
-    const renderForfitaireTable = () => {
-      const forfitaireRows = Array.from(societeNames).map((societeName) => (
-        <tr
-          key={societeName}
-          className="hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <td className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300">
-            {societeName}
-          </td>
-          {weeks.map((week) => (
-            <td
-              key={week + societeName}
-              className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300"
-            >
-              {(weeklyData[week][societeName]?.forfitaire || 0).toFixed(2)}
-            </td>
-          ))}
-        </tr>
-      ));
-
-      return (
-        <>
-          <h3 className="text-lg font-semibold mb-2 dark:text-gray-300">
-            Facturation forfaitaire par nature de tache
-          </h3>
-          <table className="min-w-full border border-gray-300 dark:border-gray-700 mt-4">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 p-2 dark:border-gray-700">
-                  Societe
-                </th>
-                {headers}
-              </tr>
-            </thead>
-            <tbody>{forfitaireRows}</tbody>
-          </table>
-        </>
-      );
-    };
-
-    const renderHorraireTable = () => {
-      const horraireRows = Array.from(societeNames).map((societeName) => (
-        <tr
-          key={societeName}
-          className="hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <td className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300">
-            {societeName}
-          </td>
-          {weeks.map((week) => (
-            <td
-              key={week + societeName}
-              className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300"
-            >
-              {(weeklyData[week][societeName]?.horraire || 0).toFixed(2)}
-            </td>
-          ))}
-        </tr>
-      ));
-
-      return (
-        <>
-          <h3 className="text-lg font-semibold mb-2 dark:text-gray-300">
-            Facturation sur base horaire (temps passé taux de la ressources)
-          </h3>
-          <table className="min-w-full border border-gray-300 dark:border-gray-700 mt-4">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 p-2 dark:border-gray-700">
-                  Societe
-                </th>
-                {headers}
-              </tr>
-            </thead>
-            <tbody>{horraireRows}</tbody>
-          </table>
-        </>
-      );
-    };
-
-    const renderTotalTable = () => {
-      const totalRows = Array.from(societeNames).map((societeName) => (
-        <tr
-          key={societeName}
-          className="hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <td className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300">
-            {societeName}
-          </td>
-          {weeks.map((week) => (
-            <td
-              key={week + societeName}
-              className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300"
-            >
-              {(
-                (weeklyData[week][societeName]?.forfitaire || 0) +
-                (weeklyData[week][societeName]?.horraire || 0)
-              ).toFixed(2)}
-            </td>
-          ))}
-        </tr>
-      ));
-
-      return (
-        <>
-          <h3 className="text-lg font-semibold mb-2 dark:text-gray-300">
-            Facturation totale
-          </h3>
-          <table className="min-w-full border border-gray-300 dark:border-gray-700 mt-4">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 p-2 dark:border-gray-700">
-                  Societe
-                </th>
-                {headers}
-              </tr>
-            </thead>
-            <tbody>{totalRows}</tbody>
-          </table>
-        </>
-      );
-    };
-
-    const renderCostearnedTable = () => {
-      const costearnedRows = Array.from(societeNames).map((societeName) => (
-        <tr
-          key={societeName}
-          className="hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <td className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300">
-            {societeName}
-          </td>
-          {weeks.map((week) => (
-            <td
-              key={week + societeName}
-              className="border border-gray-300 p-2 dark:border-gray-700 dark:text-gray-300"
-            >
-              {(weeklyData[week][societeName]?.costearned || 0).toFixed(2)}
-            </td>
-          ))}
-        </tr>
-      ));
-
-      return (
-        <>
-          <h3 className="text-lg font-semibold mb-2 dark:text-gray-300">
-            Cost Earned
-          </h3>
-          <table className="min-w-full border border-gray-300 dark:border-gray-700 mt-4">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 p-2 dark:border-gray-700">
-                  Societe
-                </th>
-                {headers}
-              </tr>
-            </thead>
-            <tbody>{costearnedRows}</tbody>
-          </table>
-        </>
-      );
-    };
+        ))}
+      </tr>
+    ));
 
     return (
       <>
-        {renderHoursTable()}
-        {renderForfitaireTable()}
-        {renderHorraireTable()}
-        {renderTotalTable()}
-        {renderCostearnedTable()}
+        <h3 className="text-lg font-semibold mb-2 dark:text-gray-300">
+          {label}
+        </h3>
+        <table className="min-w-full border border-gray-300 dark:border-gray-600 mt-4">
+          <thead>
+            <tr>
+              <th className="border border-gray-300 p-2 bg-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                Company
+              </th>
+              {headers}
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
       </>
     );
   };
 
   return (
     <div className="p-5">
-      <div className="mb-4">
-        <label className="block mb-2 text-gray-700 dark:text-gray-300">
+      <div className="mb-4 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+        <label className="flex-1 text-gray-700 dark:text-gray-300">
           Select User
           <select
             value={selectedUser}
             onChange={(e) => setSelectedUser(e.target.value)}
-            className="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+            className="block w-full mt-1 border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
           >
             <option value="">Select a user</option>
             {users.map((user) => (
@@ -323,26 +149,53 @@ function TimeSheetTable() {
             ))}
           </select>
         </label>
-        <label className="block mb-2 text-gray-700 dark:text-gray-300">
+        <label className="flex-1 text-gray-700 dark:text-gray-300">
           Start Date
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+            className="block w-full mt-1 border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
           />
         </label>
-        <label className="block mb-2 text-gray-700 dark:text-gray-300">
+        <label className="flex-1 text-gray-700 dark:text-gray-300">
           End Date
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+            className="block w-full mt-1 border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
           />
         </label>
       </div>
-      <div className="overflow-x-auto">{renderTable()}</div>
+      <Tabs aria-label="TimeSheet Tables">
+        <Tabs.Item title="Hours">
+          <div className="overflow-x-auto">{renderTable("hours", "Hours")}</div>
+        </Tabs.Item>
+        <Tabs.Item title="Flat-rate billing by task type">
+          <div className="overflow-x-auto">
+            {renderTable("forfitaire", "Flat-rate billing by task type")}
+          </div>
+        </Tabs.Item>
+        <Tabs.Item title="Hourly billing">
+          <div className="overflow-x-auto">
+            {renderTable(
+              "horraire",
+              "Hourly billing (time spent at resource rate)"
+            )}
+          </div>
+        </Tabs.Item>
+        <Tabs.Item title="Billing Earned">
+          <div className="overflow-x-auto">
+            {renderTable("costearned", "Billing Earned")}
+          </div>
+        </Tabs.Item>
+        <Tabs.Item title="Total billing">
+          <div className="overflow-x-auto">
+            {renderTable("total", "Total billing")}
+          </div>
+        </Tabs.Item>
+      </Tabs>
     </div>
   );
 }

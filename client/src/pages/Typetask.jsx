@@ -23,6 +23,9 @@ function TypeTache() {
   const [typeTacheIdToUpdate, setTypeTacheIdToUpdate] = useState(null);
   const [showModeld, setShowModeld] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchTypeTaches();
   }, []);
@@ -142,6 +145,10 @@ function TypeTache() {
     setShowUpdateModal(true);
   };
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const currentTypeTaches = typeTaches.slice(0, indexOfLastItem);
+
   return (
     <div className="w-full p-4">
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -162,7 +169,7 @@ function TypeTache() {
             <Table.HeadCell>Type Tache Name</Table.HeadCell>
             <Table.HeadCell>Action</Table.HeadCell>
           </Table.Head>
-          {typeTaches.map((typeTache) => (
+          {currentTypeTaches.map((typeTache) => (
             <Table.Body className="divide-y" key={typeTache._id}>
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell>
@@ -190,6 +197,17 @@ function TypeTache() {
             </Table.Body>
           ))}
         </Table>
+        {typeTaches.length > indexOfLastItem && (
+          <div className="flex justify-center mt-4">
+            <Button
+              outline
+              gradientDuoTone="purpleToPink"
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Show More
+            </Button>
+          </div>
+        )}
       </div>
 
       <Modal

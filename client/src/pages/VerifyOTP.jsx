@@ -27,15 +27,17 @@ const VerifyOTP = ({ email, onVerified }) => {
         body: JSON.stringify({ email, otp }),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
       const data = await res.json();
-      setMessage(data.message);
-      setLoading(false);
 
-      if (res.ok) {
+      if (!res.ok) {
+        if (res.status === 400) {
+          setMessage(data.message);
+        } else {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+      } else {
+        setMessage(data.message);
+        setLoading(false);
         onVerified();
       }
     } catch (error) {

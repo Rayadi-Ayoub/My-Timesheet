@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Bar, Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import "react-datepicker/dist/react-datepicker.css";
@@ -23,7 +23,6 @@ export default function MyNewChart() {
     try {
       const res = await fetch("/api/user/getusers");
       const data = await res.json();
-      console.log("Fetched user data:", data);
       if (res.ok) {
         setUsers(data.userWithoutPassword);
       } else {
@@ -119,47 +118,47 @@ export default function MyNewChart() {
       }))
     : [];
 
-  console.log("User list options:", userList);
-
   return (
     <div>
       <div className="p-5">
-        <h3 className="text-gray-500 text-md uppercase">Filter Data</h3>
-        <div className="flex gap-4">
-          <div>
-            <label className="block text-gray-700">Start Date</label>
+        <h3 className="text-gray-500 text-md uppercase mb-4">Filter Data</h3>
+        <div className="flex flex-wrap gap-4">
+          <div className="w-full sm:w-1/3">
+            <label className="block text-gray-700 mb-1">Start Date</label>
             <DatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}
               selectsStart
               startDate={startDate}
               endDate={endDate}
-              className="border p-2 rounded"
+              className="border p-2 rounded w-full"
             />
           </div>
-          <div>
-            <label className="block text-gray-700">End Date</label>
+          <div className="w-full sm:w-1/3">
+            <label className="block text-gray-700 mb-1">End Date</label>
             <DatePicker
               selected={endDate}
               onChange={(date) => setEndDate(date)}
               selectsEnd
               startDate={startDate}
               endDate={endDate}
-              className="border p-2 rounded"
+              className="border p-2 rounded w-full"
             />
           </div>
-          <div>
-            <label className="block text-gray-700">Select Users</label>
+          <div className="w-full sm:w-1/3">
+            <label className="block text-gray-700 mb-1">Select Users</label>
             <Select
               options={userList}
               isMulti
               onChange={setSelectedUsers}
-              className="border p-2 rounded"
+              className="border p-2 rounded w-full"
             />
           </div>
         </div>
       </div>
-      <Bar data={data} />
+      <div className="chart-container mx-auto">
+        <Bar data={data} />
+      </div>
     </div>
   );
 }

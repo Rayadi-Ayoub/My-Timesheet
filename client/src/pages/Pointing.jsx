@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Spinner, Button, Alert, Label, Textarea, Card } from "flowbite-react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   addPointingsStart,
   addPointingsSuccess,
   addPointingsFailure,
 } from "../redux/user/userSlice";
+import { Button } from "flowbite-react";
 
 function Pointing() {
   const { currentUser, error } = useSelector((state) => state.user);
@@ -84,8 +84,6 @@ function Pointing() {
   };
 
   const handleTimeStartChange = (event) => {
-    console.log(event.target.value);
-    // setTimeStart(event.target.value + ":00");
     setTimeStart(event.target.value);
   };
 
@@ -100,8 +98,16 @@ function Pointing() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!selectedSociete || !selectedTache) {
-      console.log("Societes or Taches is empty");
+    if (
+      !selectedPole ||
+      !selectedSociete ||
+      !selectedTypeTache ||
+      !selectedTache ||
+      !timeStart ||
+      !timeEnd ||
+      !comment
+    ) {
+      setAddPointingsErrorMessage("Please fill out all fields.");
       return;
     }
 
@@ -154,84 +160,68 @@ function Pointing() {
     setTimeStart("");
     setTimeEnd("");
     setComment("");
-  };
-
-  const generateOptions = (count) => {
-    return Array.from({ length: count }, (_, i) => (
-      <option key={i} value={i.toString().padStart(2, "0")}>
-        {i.toString().padStart(2, "0")}
-      </option>
-    ));
+    setAddPointingsErrorMessage("");
+    setAddPointingsSuccessMessage("");
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-3 w-full ">
-      <Card className="p-6 dark:bg-gray-800">
-        <h1 className="my-7 text-center font-semibold text-3xl text-gray-900 dark:text-gray-100">
-          Add Your Pointing
-        </h1>
-        <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col space-y-2">
-              <label
-                htmlFor="timeStart"
-                className="text-sm font-bold text-gray-700 dark:text-gray-200"
-              >
-                Time Start
-              </label>
-              {/* <select
-                id="timeStart"
-                name="timeStart"
-                value={timeStart}
-                onChange={handleTimeStartChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="" disabled>
-                  HH
-                </option>
-                {generateOptions(24)}
-              </select> */}
-              <input
-                type="time"
-                id="timeStart"
-                name="timeStart"
-                value={timeStart}
-                onChange={handleTimeStartChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              <label
-                htmlFor="timeEnd"
-                className="text-sm font-bold text-gray-700 dark:text-gray-200"
-              >
-                Time End
-              </label>
-              <input
-                type="time"
-                id="timeEnd"
-                name="timeEnd"
-                value={timeEnd}
-                onChange={handleTimeEndChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="max-w-4xl w-full p-6">
+        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8">
+          <h1 className="text-center font-bold text-4xl text-gray-800 dark:text-gray-100 mb-8">
+            Add Your Pointing
+          </h1>
+          <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col space-y-2">
+                <label
+                  htmlFor="timeStart"
+                  className="text-sm font-bold text-gray-800 dark:text-gray-200"
+                >
+                  Time Start
+                </label>
+                <input
+                  type="time"
+                  id="timeStart"
+                  name="timeStart"
+                  value={timeStart}
+                  onChange={handleTimeStartChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <label
+                  htmlFor="timeEnd"
+                  className="text-sm font-bold text-gray-800 dark:text-gray-200"
+                >
+                  Time End
+                </label>
+                <input
+                  type="time"
+                  id="timeEnd"
+                  name="timeEnd"
+                  value={timeEnd}
+                  onChange={handleTimeEndChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
+                />
+              </div>
             </div>
-          </div>
-          <select
-            value={selectedPole}
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="">Please select a pole</option>
-            {poles.map((pole, index) => (
-              <option key={index} value={pole._id}>
-                {pole.NomP}
-              </option>
-            ))}
-          </select>
-          {selectedPole && (
+            <select
+              value={selectedPole}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
+            >
+              <option value="">Please select a pole</option>
+              {poles.map((pole, index) => (
+                <option key={index} value={pole._id}>
+                  {pole.NomP}
+                </option>
+              ))}
+            </select>
             <select
               value={selectedSociete}
               onChange={handleSocieteChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
             >
               <option value="">Please select a Company</option>
               {societes.map((societe, index) => (
@@ -240,24 +230,22 @@ function Pointing() {
                 </option>
               ))}
             </select>
-          )}
-          <select
-            value={selectedTypeTache}
-            onChange={handleTypeTacheChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="">Please select a TypeTache</option>
-            {typeTaches.map((typeTache, index) => (
-              <option key={index} value={typeTache._id}>
-                {typeTache.typetache}
-              </option>
-            ))}
-          </select>
-          {selectedTypeTache && (
+            <select
+              value={selectedTypeTache}
+              onChange={handleTypeTacheChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
+            >
+              <option value="">Please select a TypeTache</option>
+              {typeTaches.map((typeTache, index) => (
+                <option key={index} value={typeTache._id}>
+                  {typeTache.typetache}
+                </option>
+              ))}
+            </select>
             <select
               value={selectedTache}
               onChange={handleTacheChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
             >
               <option value="">Please select a Tache</option>
               {taches.map((tache, index) => (
@@ -266,52 +254,72 @@ function Pointing() {
                 </option>
               ))}
             </select>
-          )}
-          <div className="max-w-md">
-            <div className="mb-2 block">
-              <Label htmlFor="comment" value="Your comment" />
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="comment"
+                className="text-sm font-bold text-gray-800 dark:text-gray-200"
+              >
+                Your comment
+              </label>
+              <textarea
+                id="comment"
+                placeholder="Leave a comment..."
+                required
+                rows={4}
+                value={comment}
+                onChange={handleCommentChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
+              />
             </div>
-            <Textarea
-              id="comment"
-              placeholder="Leave a comment..."
-              required
-              rows={4}
-              value={comment}
-              onChange={handleCommentChange}
-            />
-          </div>
-          <Button
-            type="submit"
-            gradientDuoTone="purpleToBlue"
-            disabled={loading}
-            outline
-          >
-            {loading ? (
-              <>
-                <Spinner size="sm" />
-                <span className="pl-3">Loading...</span>
-              </>
-            ) : (
-              "Add Pointing"
-            )}
-          </Button>
-          {addPointingsSuccessMessage && (
-            <Alert color="success" className="mt-5">
-              {addPointingsSuccessMessage}
-            </Alert>
-          )}
-          {addPointingsErrorMessage && (
-            <Alert color="failure" className="mt-5">
-              {addPointingsErrorMessage}
-            </Alert>
-          )}
-          {error && (
-            <Alert color="success" className="mt-5">
-              {error}
-            </Alert>
-          )}
-        </form>
-      </Card>
+            <Button
+              type="submit"
+              gradientDuoTone="purpleToPink"
+              className="w-full text-white font-bold py-1 px-2 rounded-md text-sm focus:ring-4 focus:ring-orange-300 disabled:bg-gray-400"
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 2.042.737 3.904 1.961 5.363l2.039-1.072z"
+                    ></path>
+                  </svg>
+                  <span className="pl-3">Loading...</span>
+                </div>
+              ) : (
+                "Add Pointing"
+              )}
+            </Button>
+            <div className="mt-5 text-center">
+              {addPointingsSuccessMessage && (
+                <div className="text-green-600 font-bold">
+                  {addPointingsSuccessMessage}
+                </div>
+              )}
+              {addPointingsErrorMessage && (
+                <div className="text-red-600 font-bold">
+                  {addPointingsErrorMessage}
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

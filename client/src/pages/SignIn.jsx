@@ -57,7 +57,7 @@ export default function SignIn() {
 
       if (res.ok) {
         dispatch(signInSuccess(data));
-        navigate("/dashboard/pointing");
+        navigate("/dashboard");
       }
     } catch (error) {
       dispatch(signInFailure(error.message));

@@ -1,5 +1,5 @@
 import Projet from '../models/project.model.js';
-import Tache from '../models/tache.model.js'; // Import the Tache model
+
 
 export const createProject = async (req, res) => {
   try {
@@ -120,15 +120,6 @@ export const updateTaskStage = async (req, res) => {
     }
 
     console.log('Project found:', project);
-
-    // const taskIndex = project.tache.findIndex(task => task._id.toString() === taskId);
-
-    // if (taskIndex === -1) {
-    //   console.error(`Task not found with ID: ${taskId} in project ID: ${projectId}`);
-    //   return res.status(404).json({ message: 'Task not found' });
-    // }
-
-    // project.tache[taskIndex].stage = stage;
     project.stage = stage
     await project.save();
 

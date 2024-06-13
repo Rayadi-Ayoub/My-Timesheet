@@ -124,6 +124,7 @@ export default function DashUsers() {
                     <Button
                       size="xs"
                       onClick={() => {
+                        setSelectedUser(user);
                         setShowUpdateModal(true);
                       }}
                     >
@@ -142,8 +143,8 @@ export default function DashUsers() {
                     <Button
                       size="xs"
                       onClick={() => {
-                        setShowDetailsModal(true);
                         setSelectedUser(user);
+                        setShowDetailsModal(true);
                       }}
                     >
                       <FaInfoCircle />

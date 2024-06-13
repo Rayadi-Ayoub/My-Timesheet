@@ -156,41 +156,40 @@ export default function Dashsidebar() {
             </>
           )}
 
-          {currentUser.poste === "controller" ||
-            (currentUser.poste === "admin" && (
-              <>
-                <Sidebar.Item
-                  as={Link}
-                  to="/dashboard/reporting"
-                  className="cursor-pointer"
-                  icon={TbReport}
-                  onClick={() => setReportingOpen(!reportingOpen)}
-                >
-                  Reporting
-                </Sidebar.Item>
+          {currentUser.poste === "controller" && (
+            <>
+              <Sidebar.Item
+                as={Link}
+                to="/dashboard/reporting"
+                className="cursor-pointer"
+                icon={TbReport}
+                onClick={() => setReportingOpen(!reportingOpen)}
+              >
+                Reporting
+              </Sidebar.Item>
 
-                {reportingOpen && (
-                  <>
-                    <Sidebar.Item
-                      as={Link}
-                      to="/dashboard/charts"
-                      className="pl-6"
-                      icon={SiSoundcharts}
-                    >
-                      Charts
-                    </Sidebar.Item>
-                    <Sidebar.Item
-                      as={Link}
-                      to="/dashboard/timesheettable"
-                      className="pl-6"
-                      icon={BsTable}
-                    >
-                      TimeSheetTable
-                    </Sidebar.Item>
-                  </>
-                )}
-              </>
-            ))}
+              {reportingOpen && (
+                <>
+                  <Sidebar.Item
+                    as={Link}
+                    to="/dashboard/charts"
+                    className="pl-6"
+                    icon={SiSoundcharts}
+                  >
+                    Charts
+                  </Sidebar.Item>
+                  <Sidebar.Item
+                    as={Link}
+                    to="/dashboard/timesheettable"
+                    className="pl-6"
+                    icon={BsTable}
+                  >
+                    TimeSheetTable
+                  </Sidebar.Item>
+                </>
+              )}
+            </>
+          )}
 
           <Sidebar.Item
             icon={HiArrowSmRight}

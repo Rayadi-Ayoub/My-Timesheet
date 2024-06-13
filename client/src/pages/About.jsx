@@ -1,57 +1,47 @@
 export default function About() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="max-w-2xl mx-auto p-3 text-center">
-        <div>
-          <h1 className="text-3xl font font-semibold text-center my-7">
-            Présentation de la société « GEISER »
-          </h1>
-          <div className="text-md text-gray-500 flex flex-col gap-6">
-            <p>
-              Créée en Avril 1986, GEISER (La Générale D'Informatique et de
-              Services) appartient au Pôle Services & Finances du Groupe UTIC
-              (Ulysse Trading and Industrial Companies). Forte de son
-              savoir-faire, de l'expertise de ses équipes et de la performance
-              de ses solutions innovantes, GEISER s'est spécialisée dans
-              l'intégration de solutions informatiques pour la réalisation « clé
-              en main » de vos projets. GEISER se voit jour après jour approuver
-              à grande échelle par les entreprises désireuses d'améliorer, de
-              moderniser et de consolider leurs infrastructures informatiques.
-              Grâce à ses services complets et adaptés, GEISER vous fournit de
-              nouveaux composants logiciels et matériels à introduire dans votre
-              système d'information et veille à l'intégration de ces composants
-              de manière cohérente et planifiée.
-            </p>
-
-            <p>
-              Au-delà de l'intégration, de l'installation et de la distribution
-              de votre matériel et équipement informatique, GEISER met à votre
-              disposition une équipe d'experts minutieusement choisis en vue de
-              vous conseiller et de vous guider pour utiliser vos
-              infrastructures de la façon la plus appropriée. De plus, et pour
-              vous garantir une utilisation optimale de votre infrastructure
-              informatique, GEISER vous propose des formations sur mesure
-              apportant à votre personnel les compétences indispensables à la
-              maîtrise de vos solutions et de votre environnement informatique.
-            </p>
-
-            <p>
-              L'ensemble bénéficie de l'assise d'un service après-vente
-              efficace, rapide et réactif qui veille à la résolution immédiate
-              de tous vos problèmes matériels et logiciels et à l'accompagnement
-              permanent de vos utilisateurs. Se voulant être également votre
-              interlocuteur unique, GEISER centralise toutes les compétences
-              nécessaires à la réalisation intégrale de vos projets et met à
-              votre disposition ses services de conseil en systèmes
-              d'information ainsi qu'en matières fiscale et juridique tout en
-              entretenant sa réactivité à tout autre besoin. Soucieuse enfin
-              d'accompagner les dernières tendances de l'environnement dans
-              lequel vous évoluez et constamment avisée quant aux dernières
-              évolutions technologiques du marché, GEISER intègre le domaine des
-              Services à valeur ajoutée et vous offre une plateforme SMS riche
-              et une gestion efficace de vos campagnes emailing.
-            </p>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg">
+        <h1 className="text-3xl font-semibold text-center my-7 text-gray-900 dark:text-white">
+          Company Overview: GEISER
+        </h1>
+        <div className="text-md text-gray-700 dark:text-gray-300 flex flex-col gap-6">
+          <p>
+            Founded in April 1986, GEISER (La Générale D'Informatique et de
+            Services) is part of the Services & Finance division of the UTIC
+            Group (Ulysse Trading and Industrial Companies). Leveraging its
+            expertise, the skills of its teams, and the performance of its
+            innovative solutions, GEISER specializes in the integration of IT
+            solutions for turnkey project execution. GEISER has been widely
+            approved by companies seeking to improve, modernize, and consolidate
+            their IT infrastructures. Through its comprehensive and tailored
+            services, GEISER provides new software and hardware components to be
+            introduced into your information system and ensures their
+            integration in a coherent and planned manner.
+          </p>
+          <p>
+            Beyond the integration, installation, and distribution of your IT
+            equipment, GEISER offers a team of carefully selected experts to
+            advise and guide you in using your infrastructures most
+            appropriately. Furthermore, to ensure optimal use of your IT
+            infrastructure, GEISER offers customized training, providing your
+            staff with the essential skills to master your solutions and IT
+            environment.
+          </p>
+          <p>
+            All this is supported by an efficient, rapid, and responsive
+            after-sales service that ensures immediate resolution of all your
+            hardware and software issues and continuous support for your users.
+            Aiming to be your sole point of contact, GEISER centralizes all the
+            necessary skills for the complete execution of your projects and
+            provides consulting services in information systems as well as in
+            fiscal and legal matters, maintaining its responsiveness to any
+            other needs. Finally, keeping up with the latest trends in your
+            environment and being constantly informed of the latest market
+            technological advancements, GEISER integrates the field of
+            value-added services, offering a rich SMS platform and efficient
+            management of your email marketing campaigns.
+          </p>
         </div>
       </div>
     </div>

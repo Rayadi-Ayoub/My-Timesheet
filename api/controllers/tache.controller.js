@@ -52,8 +52,6 @@ export const addTacheWithTypeTache = async (req, res) => {
   }
 };
 
-
-
 export const getTachesByTypeTache = async (req, res) => {
     const { typeTacheId } = req.params;
 

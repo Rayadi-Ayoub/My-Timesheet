@@ -141,10 +141,6 @@ export const getAllPoles = async (req, res) => {
   }
 };
 
-
-
-
-
 export const updatePole = async (req, res) => {
   const { id } = req.params;
   const { NomP, location, societes } = req.body;
@@ -162,8 +158,6 @@ export const updatePole = async (req, res) => {
     return res.status(500).json({ message: 'An error occurred while updating the pole' });
   }
 };
-
-
 
 export const updateSociete = async (req, res) => {
   const { id } = req.params;

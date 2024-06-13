@@ -27,17 +27,19 @@ export default function ForgetPasswordModal({ onClose }) {
         body: JSON.stringify({ email }),
       });
 
+      const data = await res.json(); // Move this inside the try block to parse JSON first
+
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        if (res.status === 404) {
+          throw new Error("User not found");
+        } else {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
       }
 
-      const data = await res.json();
       setMessage(data.message);
       setLoading(false);
-
-      if (res.ok) {
-        onClose(true, email);
-      }
+      onClose(true, email);
     } catch (error) {
       setMessage(error.message);
       setLoading(false);

@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Modal,
-  TextInput,
-  Spinner,
-  Alert,
-  Table,
-} from "flowbite-react";
+import { Button, Modal, TextInput, Spinner, Table } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { IoMdAdd } from "react-icons/io";
-import { IoIosAddCircle } from "react-icons/io";
-
+import { IoMdAdd, IoIosAddCircle } from "react-icons/io";
 import { Tabs } from "flowbite-react";
 import { IoTimeOutline } from "react-icons/io5";
 import { GrMoney } from "react-icons/gr";
@@ -33,6 +24,10 @@ function Task() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedTypeTacheToUpdate, setSelectedTypeTacheToUpdate] =
     useState(null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchTypeTaches();
@@ -91,7 +86,9 @@ function Task() {
     e.preventDefault();
 
     if (!formData.nomtache || !selectedTypeTache || !formData.prixType) {
-      return setErrorMessage("Please fill out all fields.");
+      setErrorMessage("Please fill out all fields.");
+      setShowErrorModal(true);
+      return;
     }
 
     if (
@@ -100,7 +97,9 @@ function Task() {
       (formData.prixType === "forfitaire" &&
         (!formData.prixforfitaire || formData.prixforfitaire < 0))
     ) {
-      return setErrorMessage("Please fill out all fields.");
+      setErrorMessage("Please fill out all fields.");
+      setShowErrorModal(true);
+      return;
     }
 
     const body = {
@@ -132,6 +131,7 @@ function Task() {
 
       if (!res.ok) {
         setErrorMessage(data.message);
+        setShowErrorModal(true);
       } else {
         fetchTaches();
         setShowModal(false);
@@ -139,6 +139,7 @@ function Task() {
     } catch (error) {
       console.error("Error submitting form:", error.message); // Log error
       setErrorMessage(error.message);
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -154,7 +155,9 @@ function Task() {
       (updateFormData.prixType === "horraire" && !updateFormData.prixHoraire) ||
       !selectedTypeTacheToUpdate
     ) {
-      return setErrorMessage("Please fill out all fields.");
+      setErrorMessage("Please fill out all fields.");
+      setShowErrorModal(true);
+      return;
     }
 
     const body = {
@@ -184,12 +187,14 @@ function Task() {
       const data = await res.json();
       if (!res.ok) {
         setErrorMessage(data.message);
+        setShowErrorModal(true);
       } else {
         fetchTaches();
         setShowUpdateModal(false);
       }
     } catch (error) {
       setErrorMessage(error.message);
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -203,12 +208,14 @@ function Task() {
       const data = await res.json();
       if (!res.ok) {
         setErrorMessage(data.message);
+        setShowErrorModal(true);
       } else {
         setShowModeld(false);
         fetchTaches();
       }
     } catch (error) {
       setErrorMessage(error.message);
+      setShowErrorModal(true);
     }
   };
 
@@ -222,6 +229,10 @@ function Task() {
     });
     setShowUpdateModal(true);
   };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const currentTaches = taches.slice(0, indexOfLastItem);
 
   return (
     <div className="w-full p-4">
@@ -241,11 +252,10 @@ function Task() {
             <Table.HeadCell>Date created</Table.HeadCell>
             <Table.HeadCell>prixType</Table.HeadCell>
             <Table.HeadCell>Tache Name</Table.HeadCell>
-
             <Table.HeadCell>Prix</Table.HeadCell>
             <Table.HeadCell>Action</Table.HeadCell>
           </Table.Head>
-          {taches.map((tache) => (
+          {currentTaches.map((tache) => (
             <Table.Body className="divide-y" key={tache._id}>
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell>
@@ -279,6 +289,16 @@ function Task() {
             </Table.Body>
           ))}
         </Table>
+        {currentTaches.length < taches.length && (
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+              gradientDuoTone="purpleToPink"
+            >
+              Show More
+            </Button>
+          </div>
+        )}
       </div>
       <Modal
         show={showModal}
@@ -471,12 +491,28 @@ function Task() {
           </form>
         </Modal.Body>
       </Modal>
-
-      {errorMessage && (
-        <Alert className="mt-5" color="failure">
-          {errorMessage}
-        </Alert>
-      )}
+      <Modal
+        show={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center ">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-red-500 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg font-medium text-gray-500 dark:text-gray-400">
+              Error
+            </h3>
+            <p className="text-sm text-red-500">{errorMessage}</p>
+            <div className="mt-4">
+              <Button color="gray" onClick={() => setShowErrorModal(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

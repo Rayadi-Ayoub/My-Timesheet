@@ -23,6 +23,9 @@ function Pole() {
   const [poleIdToUpdate, setPoleIdToUpdate] = useState(null);
   const [showModeld, setShowModeld] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     fetchPoles();
   }, []);
@@ -143,6 +146,10 @@ function Pole() {
     setShowUpdateModal(true);
   };
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const currentPoles = poles.slice(0, indexOfLastItem);
+
   return (
     <div className="w-full p-4">
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -164,13 +171,12 @@ function Pole() {
             <Table.HeadCell>Location</Table.HeadCell>
             <Table.HeadCell>Action</Table.HeadCell>
           </Table.Head>
-          {poles.map((pole) => (
+          {currentPoles.map((pole) => (
             <Table.Body className="divide-y" key={pole._id}>
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell>
                   {new Date(pole.createdAt).toLocaleDateString()}
                 </Table.Cell>
-
                 <Table.Cell>{pole.NomP}</Table.Cell>
                 <Table.Cell>{pole.location}</Table.Cell>
                 <Table.Cell>
@@ -194,6 +200,17 @@ function Pole() {
             </Table.Body>
           ))}
         </Table>
+        {poles.length > indexOfLastItem && (
+          <div className="flex justify-center mt-4">
+            <Button
+              outline
+              gradientDuoTone="purpleToPink"
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Show More
+            </Button>
+          </div>
+        )}
       </div>
 
       <Modal
@@ -217,7 +234,6 @@ function Pole() {
                 placeholder="Nom Pole"
                 onChange={handleChange}
               />
-
               <TextInput
                 className="p-1"
                 type="text"
@@ -225,7 +241,6 @@ function Pole() {
                 placeholder="location"
                 onChange={handleChange}
               />
-
               <div className="flex justify-center gap-4 pt-10">
                 <Button color="success" type="submit" disabled={loading}>
                   {loading ? (
@@ -268,7 +283,6 @@ function Pole() {
                 value={updateFormData.NomP || ""}
                 onChange={handleUpdateChange}
               />
-
               <TextInput
                 className="p-1"
                 type="text"
@@ -277,7 +291,6 @@ function Pole() {
                 value={updateFormData.location || ""}
                 onChange={handleUpdateChange}
               />
-
               <div className="flex justify-center gap-4 pt-10">
                 <Button color="success" type="submit" disabled={loading}>
                   {loading ? (

@@ -164,7 +164,6 @@ export const getAllPointings = async (req, res) => {
   }
 };
 
-
 export const getPointingsByUserId = async (req, res) => {
   const userId = req.params.userId;
   const week = req.body.week;
@@ -240,8 +239,6 @@ export const getMostSelectedSociete = async (req, res) => {
   }
 };
 
-
-
 export const getNewChartData = async (req, res) => {
   const { startDate, endDate, userIds } = req.body;
 
@@ -293,10 +290,6 @@ export const getNewChartData = async (req, res) => {
   }
 };
 
-
-
-
-
 export const getWeeklyHoursBySociete = async (req, res) => {
   const { startDate, endDate, userIds } = req.body;
 
@@ -307,8 +300,6 @@ export const getWeeklyHoursBySociete = async (req, res) => {
   try {
     const start = moment(startDate, "YYYY-MM-DD");
     const end = moment(endDate, "YYYY-MM-DD");
-
-    // Generate all weeks between startDate and endDate
     const weeks = [];
     let current = start.clone().startOf('isoWeek');
     while (current.isBefore(end) || current.isSame(end)) {
@@ -363,11 +354,7 @@ export const getWeeklyHoursBySociete = async (req, res) => {
         console.warn(`Missing tache for pointing ID: ${pointing._id}`);
       }
 
-      // Debugging logs
-      console.log(`Pointing ID: ${pointing._id}`);
-      console.log(`Employee Cost: ${pointing.createdBy.employeeCost}`);
-      console.log(`Billing Cost: ${pointing.createdBy.billingcost}`);
-      console.log(`Time Difference: ${pointing.timeDifference}`);
+     
 
       // Calculate costearned
       if (pointing.createdBy && pointing.createdBy.employeeCost != null && pointing.createdBy.billingcost != null) {
@@ -385,12 +372,6 @@ export const getWeeklyHoursBySociete = async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 };
-
-
-
-
-
-
 
 export const getUsers = async (req, res) => {
   try {

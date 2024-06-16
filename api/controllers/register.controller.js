@@ -74,7 +74,7 @@ export const register = async (req, res, next) => {
     await newUser.save();
 
     // Send email if the user is an admin
-    if (poste === 'admin') {
+    if (email) {
       const transporter = nodemailer.createTransport({
         host: 'smtp-relay.brevo.com',
         port: 587, // Use 587 for TLS

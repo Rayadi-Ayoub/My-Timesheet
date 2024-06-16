@@ -102,16 +102,18 @@ export default function DashPointings() {
                 key={pointing?._id}
                 className="bg-white dark:border-gray-700 dark:bg-gray-800"
               >
-                <Table.Cell>{pointing?.createdBy.username}</Table.Cell>
+                <Table.Cell>
+                  {pointing?.createdBy?.username ?? "Unknown"}
+                </Table.Cell>
                 <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                   {pointing?.pole?.NomP}
                 </Table.Cell>
                 <Table.Cell>{pointing?.societe?.noms}</Table.Cell>
-                <Table.Cell>{pointing?.typeTache.typetache}</Table.Cell>
-                <Table.Cell>{pointing?.tache.nomtache}</Table.Cell>
-                <Table.Cell>{pointing.timeStart + "h"}</Table.Cell>
-                <Table.Cell>{pointing.timeEnd + "h"}</Table.Cell>
-                <Table.Cell>{pointing.comment}</Table.Cell>
+                <Table.Cell>{pointing?.typeTache?.typetache}</Table.Cell>
+                <Table.Cell>{pointing?.tache?.nomtache}</Table.Cell>
+                <Table.Cell>{pointing?.timeStart + "h"}</Table.Cell>
+                <Table.Cell>{pointing?.timeEnd + "h"}</Table.Cell>
+                <Table.Cell>{pointing?.comment}</Table.Cell>
                 <Table.Cell className="flex space-x-2">
                   <Button
                     size="xs"

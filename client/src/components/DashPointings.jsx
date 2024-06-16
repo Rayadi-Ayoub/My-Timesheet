@@ -16,7 +16,7 @@ export default function DashPointings() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [pointingIdToDelete, setPointingIdToDelete] = useState("");
   const [selectedPointing, setSelectedPointing] = useState(null);
-
+  //fixed
   useEffect(() => {
     fetchPointings();
   }, [currentUser._id, showAll]);

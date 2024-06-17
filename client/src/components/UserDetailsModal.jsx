@@ -51,10 +51,7 @@ const UserDetailsModal = ({ show, onClose, user, currentUser }) => {
                     <strong>Hiring Date:</strong>{" "}
                     {new Date(user.hiringDate).toLocaleDateString()}
                   </p>
-                  <p className="text-gray-700">
-                    <strong>Admin:</strong>{" "}
-                    {currentUser.poste === "admin" ? "Yes" : "No"}
-                  </p>
+                 
                 </div>
               </div>
             </div>

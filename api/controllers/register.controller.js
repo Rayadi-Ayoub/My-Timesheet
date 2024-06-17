@@ -3,6 +3,9 @@ import bcryptjs from "bcryptjs";
 import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const register = async (req, res, next) => {
   const {
@@ -19,72 +22,73 @@ export const register = async (req, res, next) => {
     billingcost
   } = req.body;
 
-  const existingUser = await User.findOne({ matricule });
-  if (existingUser) {
-    return next(errorHandler(400, "This user exists in your list"));
-  }
-
-  if (
-    !username ||
-    !matricule ||
-    !poste ||
-    !departement ||
-    !hiringDate ||
-    !address ||
-    !phone ||
-    !email ||
-    !password ||
-    !employeeCost ||
-    username === "" ||
-    matricule === "" ||
-    poste === "" ||
-    departement === "" ||
-    hiringDate === "" ||
-    address === "" ||
-    phone === "" ||
-    email === "" ||
-    password === "" ||
-    employeeCost === "" || 
-    billingcost === ""
-  ) {
-    return next(errorHandler(400, "Please provide all required fields"));
-  }
-
-  const hashPassword = bcryptjs.hashSync(password, 10);
-
-  if (!req.user || !req.user.poste === "admin" ) {
-    return next(errorHandler(403, "You are not allowed to register a user"));
-  }
-
-  const newUser = new User({
-    username,
-    matricule,
-    poste,
-    departement,
-    hiringDate,
-    address,
-    phone,
-    email,
-    employeeCost,
-    billingcost,
-    password: hashPassword,
-  });
-
   try {
+    const existingUser = await User.findOne({ matricule });
+    if (existingUser) {
+      return next(errorHandler(400, "This user exists in your list"));
+    }
+
+    if (
+      !username ||
+      !matricule ||
+      !poste ||
+      !departement ||
+      !hiringDate ||
+      !address ||
+      !phone ||
+      !email ||
+      !password ||
+      !employeeCost ||
+      !billingcost ||
+      username === "" ||
+      matricule === "" ||
+      poste === "" ||
+      departement === "" ||
+      hiringDate === "" ||
+      address === "" ||
+      phone === "" ||
+      email === "" ||
+      password === "" ||
+      employeeCost === "" || 
+      billingcost === ""
+    ) {
+      return next(errorHandler(400, "Please provide all required fields"));
+    }
+
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
+    const hashPassword = bcryptjs.hashSync(password, saltRounds);
+
+    if (!req.user || req.user.poste !== "admin") {
+      return next(errorHandler(403, "You are not allowed to register a user"));
+    }
+
+    const newUser = new User({
+      username,
+      matricule,
+      poste,
+      departement,
+      hiringDate,
+      address,
+      phone,
+      email,
+      employeeCost,
+      billingcost,
+      password: hashPassword,
+    });
+
     await newUser.save();
 
-    // Send email if the user is an admin
     if (email) {
       const transporter = nodemailer.createTransport({
-        host: 'smtp-relay.brevo.com',
-        port: 587, // Use 587 for TLS
-        secure: false, 
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: false,
         auth: {
-          user: '75869a001@smtp-brevo.com',
-          pass: '45SrGhZUJQXHma92', // Your app-specific password
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
         },
         tls: {
-          rejectUnauthorized: false, // Allow self-signed certificates
+          rejectUnauthorized: false,
         },
       });
 
@@ -143,7 +147,7 @@ export const signin = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { id: validUser._id, poste: validUser.poste === "admin"  , poste: validUser.poste },
+      { id: validUser._id, poste: validUser.poste },
       process.env.JWT_SECRET
     );
     const { password: pass, ...rest } = validUser._doc;

@@ -2,85 +2,99 @@ import Pointing from "../models/pointing.model.js";
 import moment from 'moment';
 import Tache from "../models/tache.model.js";
 import User from "../models/user.model.js";
+import { body, validationResult } from 'express-validator';
+import xss from 'xss';
 
-export const createPointing = async (req, res) => {
-  const timeStart = new Date(`1970-01-01T${req.body.timeStart}:00`);
-  const timeEnd = new Date(`1970-01-01T${req.body.timeEnd}:00`);
-  const diffInMilliseconds = Math.abs(timeEnd - timeStart);
-  let diffInHours = diffInMilliseconds / (1000 * 60 * 60);
+// Create Pointing
+export const createPointing = [
+  body('timeStart').notEmpty().isString().trim().escape(),
+  body('timeEnd').notEmpty().isString().trim().escape(),
+  body('tache').notEmpty().isMongoId().trim().escape(),
+  body('createdBy').notEmpty().isMongoId().trim().escape(),
 
-  diffInHours = parseFloat(diffInHours.toFixed(2));
-
-  const pointing = new Pointing({
-    ...req.body,
-    timeDifference: diffInHours,
-  });
-
-  try {
-    const tache = await Tache.findById(pointing.tache);
-    if (!tache) {
-      return res.status(404).send({ message: "Tache not found" });
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Calculate costPerHours
-    let costTask = 0;
-    if (tache.prixType === 'forfitaire' && tache.prixforfitaire) {
-      costTask = parseFloat(tache.prixforfitaire.toFixed(3));
-    } else if (tache.prixType === 'horraire' && tache.prixHoraire) {
-      costTask = parseFloat((diffInHours * tache.prixHoraire).toFixed(3));
-    }
-    pointing.costTask = costTask;
+    const timeStart = new Date(`1970-01-01T${xss(req.body.timeStart)}:00`);
+    const timeEnd = new Date(`1970-01-01T${xss(req.body.timeEnd)}:00`);
+    const diffInMilliseconds = Math.abs(timeEnd - timeStart);
+    let diffInHours = diffInMilliseconds / (1000 * 60 * 60);
 
-    const user = await User.findById(pointing.createdBy);
-    if (!user) {
-      return res.status(404).send({ message: "User not found" });
-    }
+    diffInHours = parseFloat(diffInHours.toFixed(2));
 
-    // Calculate costPerEmp
-    let costEmp = parseFloat((diffInHours * user.employeeCost).toFixed(3));
-    pointing.costEmp = costEmp;
-
-
-  // calculate costearned
-  let costearned = parseFloat((diffInHours * (user.billingcost-user.employeeCost)).toFixed(3));
-  pointing.costearned = costearned;
-
-
-
-    await pointing.save();
-    res.status(201).send(pointing);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-};
-
-
-export const updatePointing = async (req, res) => {
-  try {
-    const pointing = await Pointing.findOne({
-      _id: req.params.id,
-      createdBy: req.user._id,
+    const pointing = new Pointing({
+      ...req.body,
+      timeDifference: diffInHours,
     });
 
-    if (!pointing) {
-      return res.status(404).send();
+    try {
+      const tache = await Tache.findById(pointing.tache);
+      if (!tache) {
+        return res.status(404).send({ message: "Tache not found" });
+      }
+
+      let costTask = 0;
+      if (tache.prixType === 'forfitaire' && tache.prixforfitaire) {
+        costTask = parseFloat(tache.prixforfitaire.toFixed(3));
+      } else if (tache.prixType === 'horraire' && tache.prixHoraire) {
+        costTask = parseFloat((diffInHours * tache.prixHoraire).toFixed(3));
+      }
+      pointing.costTask = costTask;
+
+      const user = await User.findById(pointing.createdBy);
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+
+      let costEmp = parseFloat((diffInHours * user.employeeCost).toFixed(3));
+      pointing.costEmp = costEmp;
+
+      let costearned = parseFloat((diffInHours * (user.billingcost - user.employeeCost)).toFixed(3));
+      pointing.costearned = costearned;
+
+      await pointing.save();
+      res.status(201).send(pointing);
+    } catch (error) {
+      res.status(400).send(error);
     }
-
-    Object.keys(req.body).forEach((key) => {
-      pointing[key] = req.body[key];
-    });
-
-    await pointing.save();
-    res.send(pointing);
-  } catch (error) {
-    res.status(400).send(error);
   }
-};
+];
 
+// Update Pointing
+export const updatePointing = [
+  body('id').notEmpty().isMongoId().trim().escape(),
+
+  async (req, res) => {
+    try {
+      const pointing = await Pointing.findOne({
+        _id: xss(req.params.id),
+        createdBy: req.user._id,
+      });
+
+      if (!pointing) {
+        return res.status(404).send();
+      }
+
+      Object.keys(req.body).forEach((key) => {
+        pointing[key] = xss(req.body[key]);
+      });
+
+      await pointing.save();
+      res.send(pointing);
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  }
+];
+
+// Delete Pointing
 export const deletePointing = async (req, res) => {
   try {
     const pointing = await Pointing.findOneAndDelete({
-      _id: req.params.id,
+      _id: xss(req.params.id),
       createdBy: req.user._id,
     });
 
@@ -94,13 +108,14 @@ export const deletePointing = async (req, res) => {
   }
 };
 
+// Get All Pointings
 export const getAllPointings = async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
-  let showAll = true
+  let showAll = true;
   const reporting = req.query.reporting === 'true';
-  if(page != undefined && limit != undefined)
+  if(page !== undefined && limit !== undefined)
     showAll = req.query.showAll === 'true';
   const user = req.user;
 
@@ -108,8 +123,8 @@ export const getAllPointings = async (req, res) => {
     let pointings = null;
     if (
       ((user.poste === 'manager' || user.poste === 'admin') && showAll) || 
-    ((user.poste === 'controller' || user.poste === 'admin') && reporting)
-  ) {
+      ((user.poste === 'controller' || user.poste === 'admin') && reporting)
+    ) {
       pointings = await Pointing.find({})
         .skip(skip)
         .limit(limit)
@@ -164,9 +179,10 @@ export const getAllPointings = async (req, res) => {
   }
 };
 
+// Get Pointings by User ID
 export const getPointingsByUserId = async (req, res) => {
-  const userId = req.params.userId;
-  const week = req.body.week;
+  const userId = xss(req.params.userId);
+  const week = xss(req.body.week);
   const pointings = await Pointing.find({ createdBy: userId });
 
   const filteredPointings = pointings.filter(pointing => {
@@ -200,9 +216,10 @@ export const getPointingsByUserId = async (req, res) => {
     weekly: {},
     daily: {} });
 
-    res.json({ pointings: filteredPointings, totalTimeDifferenceByWeek });
+  res.json({ pointings: filteredPointings, totalTimeDifferenceByWeek });
 };
 
+// Get Most Selected Societe
 export const getMostSelectedSociete = async (req, res) => {
   try {
     const pointings = await Pointing.find().populate('societe');
@@ -212,7 +229,7 @@ export const getMostSelectedSociete = async (req, res) => {
     }
 
     const societeCounts = pointings.reduce((acc, pointing) => {
-      const societeName = pointing.societe ? pointing.societe.noms : null;
+      const societeName = pointing.societe ? xss(pointing.societe.noms) : null;
 
       if (societeName) {
         if (!acc[societeName]) {
@@ -239,6 +256,7 @@ export const getMostSelectedSociete = async (req, res) => {
   }
 };
 
+// Get New Chart Data
 export const getNewChartData = async (req, res) => {
   const { startDate, endDate, userIds } = req.body;
 
@@ -252,7 +270,7 @@ export const getNewChartData = async (req, res) => {
       .populate("tache", "prixforfitaire prixType prixHoraire");
 
     const aggregatedData = pointings.reduce((acc, pointing) => {
-      const societeName = pointing.societe ? pointing.societe.noms : 'Unknown';
+      const societeName = pointing.societe ? xss(pointing.societe.noms) : 'Unknown';
 
       if (!acc[societeName]) {
         acc[societeName] = {
@@ -290,6 +308,7 @@ export const getNewChartData = async (req, res) => {
   }
 };
 
+// Get Weekly Hours by Societe
 export const getWeeklyHoursBySociete = async (req, res) => {
   const { startDate, endDate, userIds } = req.body;
 
@@ -327,7 +346,7 @@ export const getWeeklyHoursBySociete = async (req, res) => {
 
     pointings.forEach((pointing) => {
       const week = moment(pointing.createdAt).format("YYYY-ww");
-      const societeName = pointing.societe ? pointing.societe.noms : "Unknown";
+      const societeName = pointing.societe ? xss(pointing.societe.noms) : "Unknown";
 
       if (!weeklyData[week][societeName]) {
         weeklyData[week][societeName] = {
@@ -335,6 +354,7 @@ export const getWeeklyHoursBySociete = async (req, res) => {
           forfitaire: 0,
           horraire: 0,
           costearned: 0,
+          total: 0,
         };
       }
 
@@ -354,16 +374,16 @@ export const getWeeklyHoursBySociete = async (req, res) => {
         console.warn(`Missing tache for pointing ID: ${pointing._id}`);
       }
 
-     
-
       // Calculate costearned
       if (pointing.createdBy && pointing.createdBy.employeeCost != null && pointing.createdBy.billingcost != null) {
         let costearned = parseFloat((pointing.timeDifference * (pointing.createdBy.billingcost - pointing.createdBy.employeeCost)).toFixed(3));
-        console.log(`Calculated Cost Earned: ${costearned}`); // Log calculated costearned
         weeklyData[week][societeName].costearned += costearned;
       } else {
         console.warn(`Missing employeeCost or billingcost for user in pointing ID: ${pointing._id}`);
       }
+
+      // Calculate total
+      weeklyData[week][societeName].total = weeklyData[week][societeName].forfitaire + weeklyData[week][societeName].horraire;
     });
 
     res.status(200).json(weeklyData);
@@ -373,6 +393,8 @@ export const getWeeklyHoursBySociete = async (req, res) => {
   }
 };
 
+
+// Get Users
 export const getUsers = async (req, res) => {
   try {
     const users = await User.find({}, 'username'); 
@@ -381,5 +403,3 @@ export const getUsers = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-

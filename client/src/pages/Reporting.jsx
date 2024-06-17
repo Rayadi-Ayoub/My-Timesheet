@@ -1,6 +1,6 @@
 import { Table } from "flowbite-react";
 import { useEffect, useState } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from 'exceljs';
 import Pagination from "./Pagination"; // Ensure this is moved to its own file
 
 export default function Reporting() {
@@ -30,11 +30,48 @@ export default function Reporting() {
     }
   };
 
-  const exportToExcel = () => {
-    const wb = XLSX.utils.table_to_book(
-      document.getElementById("table-to-export")
-    );
-    XLSX.writeFile(wb, "pointings.xlsx");
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Pointings');
+
+    // Add headers
+    worksheet.columns = [
+      { header: 'Date created', key: 'createdAt', width: 20 },
+      { header: 'Username', key: 'username', width: 20 },
+      { header: 'Company concerned', key: 'company', width: 20 },
+      { header: 'Task completed', key: 'task', width: 20 },
+      { header: 'Comment', key: 'comment', width: 20 },
+      { header: 'Horaire / Forfitaire', key: 'priceType', width: 20 },
+      { header: 'Number of hours worked', key: 'hoursWorked', width: 20 },
+      { header: 'Task Price', key: 'taskPrice', width: 20 },
+      { header: 'Employee Cost', key: 'employeeCost', width: 20 },
+      { header: 'Cost Earned', key: 'costEarned', width: 20 },
+    ];
+
+    // Add rows
+    pointings.forEach(pointing => {
+      worksheet.addRow({
+        createdAt: pointing.createdAt && new Date(pointing.createdAt).toLocaleDateString(),
+        username: pointing.createdBy?.username || "Unknown",
+        company: pointing.societe?.noms || "Unknown",
+        task: pointing.tache?.nomtache,
+        comment: pointing.comment,
+        priceType: pointing.tache?.prixType === "horraire"
+          ? `${pointing.tache.prixHoraire}dt`
+          : `${pointing.tache.prixforfitaire}dt`,
+        hoursWorked: `${pointing.timeDifference}h`,
+        taskPrice: `${pointing.costTask}dt`,
+        employeeCost: `${pointing.costEmp}dt`,
+        costEarned: `${pointing.costEarned}dt`
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/octet-stream" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "pointings.xlsx";
+    link.click();
   };
 
   return (

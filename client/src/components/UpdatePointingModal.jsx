@@ -3,10 +3,10 @@ import { Modal, Button, Label, Textarea } from "flowbite-react";
 import PropTypes from "prop-types";
 
 const UpdatePointingModal = ({ show, onClose, pointing, onUpdate }) => {
-  const [pole, setPole] = useState(pointing.pole);
-  const [societe, setSociete] = useState(pointing.societe);
-  const [typeTache, setTypeTache] = useState(pointing.typeTache);
-  const [tache, setTache] = useState(pointing.tache);
+  const [pole, setPole] = useState(pointing.pole._id);
+  const [societe, setSociete] = useState(pointing.societe._id);
+  const [typeTache, setTypeTache] = useState(pointing.typeTache._id);
+  const [tache, setTache] = useState(pointing.tache._id);
   const [timeStart, setTimeStart] = useState(pointing.timeStart);
   const [timeEnd, setTimeEnd] = useState(pointing.timeEnd);
   const [comment, setComment] = useState(pointing.comment);
@@ -16,10 +16,10 @@ const UpdatePointingModal = ({ show, onClose, pointing, onUpdate }) => {
   const [taches, setTaches] = useState([]);
 
   useEffect(() => {
-    setPole(pointing.pole);
-    setSociete(pointing.societe);
-    setTypeTache(pointing.typeTache);
-    setTache(pointing.tache);
+    setPole(pointing.pole._id);
+    setSociete(pointing.societe._id);
+    setTypeTache(pointing.typeTache._id);
+    setTache(pointing.tache._id);
     setTimeStart(pointing.timeStart);
     setTimeEnd(pointing.timeEnd);
     setComment(pointing.comment);
@@ -28,6 +28,7 @@ const UpdatePointingModal = ({ show, onClose, pointing, onUpdate }) => {
     fetchTypeTaches();
     fetchTaches(pointing.typeTache._id);
   }, [pointing]);
+
   const fetchPoles = async () => {
     const response = await fetch(`/api/poles`);
     const data = await response.json();
@@ -55,14 +56,13 @@ const UpdatePointingModal = ({ show, onClose, pointing, onUpdate }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const updatedPointing = {
-      ...pointing,
-      pole,
-      societe,
-      typeTache,
-      tache,
-      timeStart,
-      timeEnd,
-      comment,
+      pole: pole,
+      societe: societe,
+      typeTache: typeTache,
+      tache: tache,
+      timeStart: timeStart,
+      timeEnd: timeEnd,
+      comment: comment,
     };
 
     try {

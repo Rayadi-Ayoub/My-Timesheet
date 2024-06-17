@@ -4,6 +4,7 @@ import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 export default function Register() {
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -24,7 +25,7 @@ export default function Register() {
       !formData.email ||
       !formData.password ||
       !formData.employeeCost ||
-      !formData.billingcost === ""
+      !formData.billingcost
     ) {
       return setErrorMessage("Please fill out all fields.");
     }
@@ -32,6 +33,7 @@ export default function Register() {
     try {
       setLoading(true);
       setErrorMessage(null);
+      setSuccessMessage(null);
       const res = await fetch("/api/register/register", {
         method: "POST",
         headers: {
@@ -41,10 +43,14 @@ export default function Register() {
       });
 
       const data = await res.json();
+      setLoading(false);
+
       if (data.success === false) {
         setErrorMessage(data.message);
+      } else {
+        setSuccessMessage("User registered successfully.");
+        setFormData({});
       }
-      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
@@ -69,6 +75,7 @@ export default function Register() {
                 type="text"
                 placeholder="Username"
                 id="username"
+                value={formData.username || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -81,6 +88,7 @@ export default function Register() {
                 type="text"
                 placeholder="Matricule"
                 id="matricule"
+                value={formData.matricule || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -91,7 +99,7 @@ export default function Register() {
               />
               <select
                 id="poste"
-                value={formData.poste}
+                value={formData.poste || ""}
                 onChange={handleChange}
                 className="block w-full p-2 mt-1 text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500"
               >
@@ -108,7 +116,7 @@ export default function Register() {
               />
               <select
                 id="departement"
-                value={formData.departement}
+                value={formData.departement || ""}
                 onChange={handleChange}
                 className="block w-full p-2 mt-1 text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500"
               >
@@ -121,25 +129,27 @@ export default function Register() {
               </select>
               <Label
                 htmlFor="employeeCost"
-                value="Employee Cost"
+                value="Hourly rate"
                 className="dark:text-white"
               />
               <TextInput
                 type="text"
-                placeholder="Employee Cost"
+                placeholder="Hourly rate"
                 id="employeeCost"
+                value={formData.employeeCost || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
               <Label
                 htmlFor="billingcost"
-                value="Billing Cost"
+                value="Billing rate "
                 className="dark:text-white"
               />
               <TextInput
                 type="text"
-                placeholder="Billing Cost"
+                placeholder="Billing rate"
                 id="billingcost"
+                value={formData.billingcost || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -153,6 +163,7 @@ export default function Register() {
               <TextInput
                 id="hiringDate"
                 type="date"
+                value={formData.hiringDate || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -165,6 +176,7 @@ export default function Register() {
                 type="text"
                 placeholder="Address"
                 id="address"
+                value={formData.address || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -177,6 +189,7 @@ export default function Register() {
                 type="text"
                 placeholder="Phone"
                 id="phone"
+                value={formData.phone || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -189,6 +202,7 @@ export default function Register() {
                 type="email"
                 placeholder="name@company.com"
                 id="email"
+                value={formData.email || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -201,6 +215,7 @@ export default function Register() {
                 type="password"
                 placeholder="Password"
                 id="password"
+                value={formData.password || ""}
                 onChange={handleChange}
                 className="mt-1 dark:bg-gray-700 dark:text-white"
               />
@@ -226,6 +241,11 @@ export default function Register() {
         {errorMessage && (
           <Alert className="mt-5" color="failure">
             {errorMessage}
+          </Alert>
+        )}
+        {successMessage && (
+          <Alert className="mt-5" color="success">
+            {successMessage}
           </Alert>
         )}
       </div>

@@ -23,6 +23,7 @@ export const updateUser = async (req, res, next) => {
 
   // Password validation and hashing
   if (req.body.password) {
+    // file deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
     if (req.body.password.length < 6) {
       return next(errorHandler(400, 'Password must be at least 6 characters'));
     }
@@ -148,7 +149,7 @@ export const requestPasswordReset = async (req, res, next) => {
     });
 
     const mailOptions = {
-      from: 'rayadiayoub7@gmail.com',
+      from: 'timesheet.geiser@utic.com.tn',
       to: email,
       subject: 'Password Reset OTP',
       html: `

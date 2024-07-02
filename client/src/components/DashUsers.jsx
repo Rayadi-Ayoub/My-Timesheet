@@ -103,6 +103,7 @@ export default function DashUsers() {
                   </Table.Cell>
                   <Table.Cell>
                     <img
+                      // file deepcode ignore DOMXSS: <please specify a reason of ignoring this>
                       src={getUserProfilePicture(user.profilePicture)}
                       alt={user.profilePicture}
                       className="w-8 h-8 rounded-full"

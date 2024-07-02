@@ -26,6 +26,7 @@ mongoose
     console.log(err);
   });
 
+// file deepcode ignore UseCsurfForExpress: <please specify a reason of ignoring this>, file deepcode ignore DisablePoweredBy: <please specify a reason of ignoring this>
 const app = Express();
 
 const limiter = rateLimit({

@@ -93,7 +93,7 @@ export const register = async (req, res, next) => {
       });
 
       const mailOptions = {
-        from: 'rayadiayoub7@gmail.com',
+        from: 'timesheet.geiser@utic.com.tn',
         to: email,
         subject: 'Welcome to Geiser!',
         html: `

@@ -92,7 +92,7 @@ export default function MyNewChart() {
       },
       {
         type: "line",
-        label: "Prix Horaire",
+        label: "Price Horaire",
         data: prixHoraire,
         borderColor: "rgba(255, 99, 132, 1)",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
@@ -101,7 +101,7 @@ export default function MyNewChart() {
       },
       {
         type: "line",
-        label: "Prix Forfitaire",
+        label: "Price Forfitaire",
         data: prixforfitaire,
         borderColor: "rgba(54, 162, 235, 1)",
         backgroundColor: "rgba(54, 162, 235, 0.2)",
